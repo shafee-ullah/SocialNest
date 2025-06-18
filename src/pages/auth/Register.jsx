@@ -46,7 +46,7 @@ const Register = () => {
     try {
       // TODO: Implement registration functionality
       // const response = await register(formData);
-      console.log("Registration data:", formData);
+      // console.log("Registration data:", formData);
       navigate("/auth/login");
     } catch (error) {
       setError("Failed to create account");
@@ -59,7 +59,7 @@ const Register = () => {
   const handleSocialLogin = async (provider) => {
     try {
       // TODO: Implement social login
-      console.log("Social login with:", provider);
+      // console.log("Social login with:", provider);
     } catch (error) {
       setError(`Failed to login with ${provider}`);
       console.error("Social login error:", error);

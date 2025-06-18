@@ -92,6 +92,14 @@ const Events = () => {
     }
   };
 
+  const isAlreadyJoined = (participants) => {
+    const userEmail = user?.email;
+    const isJoined = participants.some(
+      (participant) => participant.userEmail === userEmail
+    );
+    return isJoined;
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Search and Filter Section */}
@@ -181,9 +189,21 @@ const Events = () => {
                 </button>
                 <button
                   onClick={() => handleJoinEvent(event._id)}
-                  className="flex-1 bg-primary-500 text-white py-2 rounded-md hover:bg-primary-600 transition-colors"
+                  disabled={
+                    isAlreadyJoined(event.participants) || event?.isJoined
+                  }
+                  className={`
+                    flex-1 py-2 rounded-md transition-colors
+                    ${
+                      isAlreadyJoined(event.participants) || event?.isJoined
+                        ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                        : "bg-primary-500 text-white hover:bg-primary-600"
+                    }
+                    `}
                 >
-                  Join Event
+                  {isAlreadyJoined(event.participants) || event?.isJoined
+                    ? "Already Joined"
+                    : "Join Event"}
                 </button>
               </div>
             </div>

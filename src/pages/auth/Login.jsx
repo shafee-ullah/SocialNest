@@ -58,7 +58,7 @@ const Login = () => {
   const handleSocialLogin = async (provider) => {
     try {
       // TODO: Implement social login
-      console.log("Social login with:", provider);
+      // console.log("Social login with:", provider);
     } catch (error) {
       setError(`Failed to login with ${provider}`);
       console.error("Social login error:", error);

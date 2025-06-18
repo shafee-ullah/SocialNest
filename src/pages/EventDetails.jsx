@@ -27,7 +27,12 @@ const EventDetails = () => {
       try {
         const data = await getEventById(id);
         setEvent(data);
-        setIsJoined(data.isJoined || false);
+        // setIsJoined(data.isJoined || false);
+        const userEmail = user.email;
+    const isJoined = data.participants.some(
+      (participant) => participant.userEmail=== userEmail
+    );
+    setIsJoined(isJoined || false);
       } catch (err) {
         setError("Failed to load event details.");
         toast.error("Failed to load event details.");
@@ -76,6 +81,16 @@ const EventDetails = () => {
       setIsJoining(false);
     }
   };
+
+
+  // const isAlreadyJoined= async (participants) => {
+  //   console.log(participants);
+  //   const userEmail = user.email;
+  //   const isJoined = participants.some(
+  //     (participant) => participant.userEmail=== userEmail
+  //   );
+  //   return isJoined;
+  // };
 
   if (loading) {
     return (

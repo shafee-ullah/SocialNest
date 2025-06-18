@@ -18,14 +18,14 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      console.log("Auth state changed:", user?.email);
+      // console.log("Auth state changed:", user?.email);
       setUser(user);
       setLoading(true);
 
       if (user) {
         try {
           const token = await user.getIdToken(true);
-          console.log("Got fresh token");
+          // console.log("Got fresh token");
 
           // Fetch user profile
           try {

@@ -70,11 +70,11 @@ const Register = () => {
 
     try {
       const userCredential = await createUser(email, password);
-      console.log("User created:", userCredential.user);
+      // console.log("User created:", userCredential.user);
 
       // Update Firebase profile with name and photo
       await updateUserProfile(name, photoURL);
-      console.log("Profile updated with:", { name, photoURL });
+      //  console.log("Profile updated with:", { name, photoURL });
 
       // Create user profile in backend
       await createUserProfile(userCredential.user, name, photoURL);
@@ -94,7 +94,7 @@ const Register = () => {
   const createUserProfile = async (user, name, photoURL) => {
     try {
       const token = await user.getIdToken();
-      console.log("Creating user profile with:", { name, photoURL });
+      // console.log("Creating user profile with:", { name, photoURL });
 
       const response = await fetch("http://localhost:5000/users", {
         method: "POST",
@@ -119,7 +119,7 @@ const Register = () => {
       }
 
       const data = await response.json();
-      console.log("User profile created:", data);
+      // console.log("User profile created:", data);
       return data;
     } catch (error) {
       console.error("Error creating user profile:", error);
