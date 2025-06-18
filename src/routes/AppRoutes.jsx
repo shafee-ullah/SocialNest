@@ -40,6 +40,14 @@ const AppRoutes = () => {
             }
           />
           <Route
+            path="/events/:id/edit"
+            element={
+              <PrivateRoute>
+                <CreateEvent />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/profile"
             element={
               <PrivateRoute>

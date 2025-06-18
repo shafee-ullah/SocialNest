@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaEdit, FaTrash, FaEye, FaUsers } from "react-icons/fa";
-import {getManageEvents, getUpcomingEvents} from "../services/api.js";
+import { getManageEvents, deleteEvent } from "../services/api.js";
+import { toast } from "react-hot-toast";
 
 const ManageEvents = () => {
   const [events, setEvents] = useState([]);
@@ -11,11 +12,12 @@ const ManageEvents = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const data = await getManageEvents(); // Optionally pass filters
-        setEvents(data); // Assumes API returns array of event objects
+        const data = await getManageEvents();
+        setEvents(data);
       } catch (err) {
         setError("Failed to load events.");
         console.error(err);
+        toast.error("Failed to load events");
       } finally {
         setLoading(false);
       }
@@ -27,11 +29,13 @@ const ManageEvents = () => {
   const handleDeleteEvent = async (eventId) => {
     if (window.confirm("Are you sure you want to delete this event?")) {
       try {
-        // TODO: Implement actual delete functionality
-        setEvents(events.filter((event) => event.id !== eventId));
+        await deleteEvent(eventId);
+        setEvents(events.filter((event) => event._id !== eventId));
+        toast.success("Event deleted successfully");
       } catch (error) {
         setError("Failed to delete event");
         console.error("Delete event error:", error);
+        toast.error("Failed to delete event");
       }
     }
   };
@@ -107,36 +111,43 @@ const ManageEvents = () => {
                         {event.title}
                       </h3>
                       <p className="mt-1 text-sm text-secondary-600 dark:text-secondary-400">
-                        {new Date(event.eventDate).toLocaleDateString(undefined, {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })} at{" "}
-                        {new Date(event.eventDate).toLocaleTimeString(undefined, {
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        })} • {event.location}
+                        {new Date(event.eventDate).toLocaleDateString(
+                          undefined,
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )}{" "}
+                        at{" "}
+                        {new Date(event.eventDate).toLocaleTimeString(
+                          undefined,
+                          {
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          }
+                        )}{" "}
+                        • {event.location}
                       </p>
                     </div>
                     <span
                       className={`mt-4 inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                        getEventStatus(event.date) === "upcoming"
+                        getEventStatus(event.eventDate) === "upcoming"
                           ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
                           : "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400"
                       }`}
-                                >
-                       {getEventStatus(event.date)}
+                    >
+                      {getEventStatus(event.eventDate)}
                     </span>
                   </div>
 
                   <div className="mt-4 flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center text-secondary-600 dark:text-secondary-400">
-                        <FaUsers className="w-4 h-4 mr-2"/>
+                        <FaUsers className="w-4 h-4 mr-2" />
                         <span className="text-sm">
-                          {event?.participantsCount}/{'10'}{" "}
-                          participants
+                          {event?.participantsCount || 0} participants
                         </span>
                       </div>
                       <span className="text-sm text-secondary-600 dark:text-secondary-400">
@@ -146,19 +157,19 @@ const ManageEvents = () => {
 
                     <div className="flex items-center space-x-2">
                       <Link
-                        to={`/events/${event.id}`}
+                        to={`/events/${event._id}`}
                         className="p-2 text-secondary-600 dark:text-secondary-400 hover:text-primary-500 dark:hover:text-primary-400"
                       >
                         <FaEye className="w-5 h-5" />
                       </Link>
                       <Link
-                        to={`/events/${event.id}/edit`}
+                        to={`/events/${event._id}/edit`}
                         className="p-2 text-secondary-600 dark:text-secondary-400 hover:text-primary-500 dark:hover:text-primary-400"
                       >
                         <FaEdit className="w-5 h-5" />
                       </Link>
                       <button
-                        onClick={() => handleDeleteEvent(event.id)}
+                        onClick={() => handleDeleteEvent(event._id)}
                         className="p-2 text-secondary-600 dark:text-secondary-400 hover:text-red-500 dark:hover:text-red-400"
                       >
                         <FaTrash className="w-5 h-5" />

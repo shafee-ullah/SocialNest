@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../provider/AuthProvider";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -9,7 +9,8 @@ import {
   FaUsers,
   FaImage,
 } from "react-icons/fa";
-import {createEvent} from "../services/api.js";
+import { createEvent, getEvent, updateEvent } from "../services/api.js";
+import { toast } from "react-hot-toast";
 
 const EVENT_TYPES = [
   "Cleanup",
@@ -21,6 +22,7 @@ const EVENT_TYPES = [
 ];
 
 const CreateEvent = () => {
+  const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -32,14 +34,40 @@ const CreateEvent = () => {
     date: null,
   });
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // Local state for events (simulate DB)
-  // const [events, setEvents] = useState(() => {
-  //   const stored = localStorage.getItem("socialnest_events");
-  //   return stored ? JSON.parse(stored) : [];
-  // });
+  useEffect(() => {
+    const fetchEvent = async () => {
+      if (!id) return;
+
+      try {
+        setLoading(true);
+        const event = await getEvent(id);
+        if (!event) {
+          toast.error("Event not found");
+          navigate("/events");
+          return;
+        }
+        setForm({
+          title: event.title || "",
+          description: event.description || "",
+          eventType: event.eventType || "",
+          thumbnail: event.thumbnailImage || "",
+          location: event.location || "",
+          date: event.eventDate ? new Date(event.eventDate) : null,
+        });
+      } catch (error) {
+        console.error("Error fetching event:", error);
+        toast.error("Failed to load event details");
+        navigate("/events");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvent();
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -59,6 +87,9 @@ const CreateEvent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
+    setError("");
+
     // Validation
     if (
       !form.title ||
@@ -69,33 +100,52 @@ const CreateEvent = () => {
       !form.date
     ) {
       setError("All fields are required.");
+      setSubmitting(false);
       return;
     }
     if (!isFutureDate(form.date)) {
       setError("Event date must be a future date.");
+      setSubmitting(false);
       return;
     }
-    const postData = {
+
+    const eventData = {
       title: form.title,
       description: form.description,
       eventType: form.eventType,
       thumbnailImage: form.thumbnail,
       location: form.location,
-      eventDate: form.date.toISOString(), // Must be ISO format
+      eventDate: form.date.toISOString(),
     };
 
     try {
-      const createdEvent = await createEvent(postData); // Call the actual API
-      console.log("Created event:", createdEvent);
-
-      // Optional: Update local state/UI
-      setSuccess("Event created successfully! Redirecting to Upcoming Events...");
-      setTimeout(() => {
-        navigate("/events");
-      }, 1500);
+      if (id) {
+        const updatedEvent = await updateEvent(id, eventData);
+        if (updatedEvent) {
+          toast.success("Event updated successfully!");
+          navigate("/events");
+        } else {
+          throw new Error("Failed to update event");
+        }
+      } else {
+        const createdEvent = await createEvent(eventData);
+        if (createdEvent) {
+          toast.success("Event created successfully!");
+          navigate("/events");
+        } else {
+          throw new Error("Failed to create event");
+        }
+      }
     } catch (error) {
-      console.error("Create event failed:", error);
-      setError("Failed to create event. Please try again.");
+      console.error("Event operation failed:", error);
+      setError(
+        error.message ||
+          (id ? "Failed to update event" : "Failed to create event")
+      );
+      toast.error(
+        error.message ||
+          (id ? "Failed to update event" : "Failed to create event")
+      );
     } finally {
       setSubmitting(false);
     }
@@ -108,8 +158,22 @@ const CreateEvent = () => {
           Login Required
         </h2>
         <p className="text-gray-600 dark:text-gray-300">
-          You must be logged in to create an event.
+          You must be logged in to {id ? "edit" : "create"} an event.
         </p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-2xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-secondary-200 dark:bg-secondary-700 rounded w-1/4"></div>
+            <div className="h-4 bg-secondary-200 dark:bg-secondary-700 rounded w-3/4"></div>
+            <div className="h-32 bg-secondary-200 dark:bg-secondary-700 rounded"></div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -117,7 +181,9 @@ const CreateEvent = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Create New Event</h1>
+        <h1 className="text-3xl font-bold mb-8">
+          {id ? "Edit Event" : "Create New Event"}
+        </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Title */}
@@ -266,20 +332,27 @@ const CreateEvent = () => {
             {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
           </div>
 
-          {/* Submit Button */}
-          <div>
+          <div className="flex justify-end space-x-4">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="px-6 py-2 rounded-lg font-medium text-secondary-600 dark:text-secondary-400 hover:text-secondary-900 dark:hover:text-secondary-100"
+            >
+              Cancel
+            </button>
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-primary-500 text-white py-3 rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 rounded-lg font-medium text-white bg-primary-500 hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitting ? "Creating Event..." : "Create Event"}
+              {submitting
+                ? id
+                  ? "Updating Event..."
+                  : "Creating Event..."
+                : id
+                ? "Update Event"
+                : "Create Event"}
             </button>
-            {success && (
-              <p className="mt-2 text-sm text-green-500 text-center">
-                {success}
-              </p>
-            )}
           </div>
         </form>
       </div>

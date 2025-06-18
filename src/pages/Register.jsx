@@ -111,6 +111,7 @@ const Register = () => {
             emailUpdates: true,
           },
         }),
+        credentials: "include",
       });
 
       if (!response.ok) {

@@ -9,70 +9,73 @@ import {
   FaShare,
   FaArrowLeft,
 } from "react-icons/fa";
+import { getEvent, joinEvent } from "../services/api";
+import { useAuth } from "../provider/AuthProvider";
+import { toast } from "react-hot-toast";
 
 const EventDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
   const [isJoined, setIsJoined] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
 
   useEffect(() => {
-    // TODO: Replace with actual API call
-    // Mock data for now
-    const mockEvent = {
-      id: parseInt(id),
-      title: "Community Clean-up Day",
-      description:
-        "Join us for a day of community service as we clean up our local park. We'll be collecting trash, planting trees, and making our community a better place for everyone.",
-      date: "2024-03-15",
-      time: "09:00 AM",
-      location: "Central Park",
-      category: "Environment",
-      participants: 15,
-      maxParticipants: 30,
-      image:
-        "https://images.unsplash.com/photo-1509099836639-18ba1795216d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-      organizer: {
-        name: "John Doe",
-        avatar:
-          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-        role: "Community Leader",
-      },
-      schedule: [
-        { time: "09:00 AM", activity: "Registration and Welcome" },
-        { time: "09:30 AM", activity: "Safety Briefing" },
-        { time: "10:00 AM", activity: "Clean-up Activities Begin" },
-        { time: "12:00 PM", activity: "Lunch Break" },
-        { time: "01:00 PM", activity: "Afternoon Activities" },
-        { time: "03:00 PM", activity: "Closing Ceremony" },
-      ],
-      requirements: [
-        "Comfortable clothing and closed-toe shoes",
-        "Water bottle",
-        "Sunscreen and hat",
-        "Work gloves (optional)",
-        "Positive attitude!",
-      ],
+    const fetchEventDetails = async () => {
+      if (!id) {
+        setError("Event ID is missing");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const data = await getEvent(id);
+        setEvent(data);
+        setIsJoined(data.isJoined || false);
+      } catch (error) {
+        setError("Failed to load event details");
+        console.error("Error fetching event details:", error);
+        toast.error("Failed to load event details");
+      } finally {
+        setLoading(false);
+      }
     };
 
-    setEvent(mockEvent);
-    setLoading(false);
+    fetchEventDetails();
   }, [id]);
 
   const handleJoinEvent = async () => {
+    if (!user) {
+      toast.error("Please login to join events");
+      navigate("/auth/login");
+      return;
+    }
+
     try {
-      // TODO: Implement actual join functionality
+      setIsJoining(true);
+      await joinEvent(id);
       setIsJoined(!isJoined);
+      toast.success(
+        isJoined ? "Left event successfully" : "Joined event successfully"
+      );
     } catch (error) {
-      setError("Failed to join event");
       console.error("Join event error:", error);
+      toast.error("Failed to join event");
+    } finally {
+      setIsJoining(false);
     }
   };
 
   const handleLikeEvent = () => {
+    if (!user) {
+      toast.error("Please login to like events");
+      navigate("/auth/login");
+      return;
+    }
     setIsLiked(!isLiked);
   };
 
@@ -115,32 +118,15 @@ const EventDetails = () => {
   }
 
   if (!event) {
-    return (
-      <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-secondary-900 dark:text-secondary-100">
-              Event not found
-            </h2>
-            <button
-              onClick={() => navigate("/events")}
-              className="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-            >
-              <FaArrowLeft className="mr-2" />
-              Back to Events
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
     <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <button
-          onClick={() => navigate("/events")}
-          className="inline-flex items-center text-secondary-600 dark:text-secondary-400 hover:text-primary-500 dark:hover:text-primary-400 mb-6"
+          onClick={() => navigate(-1)}
+          className="flex items-center text-secondary-600 dark:text-secondary-400 hover:text-primary-500 dark:hover:text-primary-400 mb-6"
         >
           <FaArrowLeft className="mr-2" />
           Back to Events
@@ -149,7 +135,7 @@ const EventDetails = () => {
         <div className="bg-white dark:bg-secondary-800 rounded-lg shadow-sm overflow-hidden">
           <div className="relative h-96">
             <img
-              src={event.image}
+              src={event.thumbnailImage}
               alt={event.title}
               className="w-full h-full object-cover"
             />
@@ -161,11 +147,19 @@ const EventDetails = () => {
               <div className="flex items-center space-x-4 text-white/90">
                 <span className="flex items-center">
                   <FaCalendar className="mr-2" />
-                  {event.date}
+                  {new Date(event.eventDate).toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </span>
                 <span className="flex items-center">
                   <FaClock className="mr-2" />
-                  {event.time}
+                  {new Date(event.eventDate).toLocaleTimeString(undefined, {
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
                 </span>
                 <span className="flex items-center">
                   <FaMapMarkerAlt className="mr-2" />
@@ -179,16 +173,16 @@ const EventDetails = () => {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-4">
                 <img
-                  src={event.organizer.avatar}
-                  alt={event.organizer.name}
+                  src={event.organizer?.photoURL}
+                  alt={event.organizer?.displayName}
                   className="w-12 h-12 rounded-full"
                 />
                 <div>
                   <h3 className="text-lg font-medium text-secondary-900 dark:text-secondary-100">
-                    {event.organizer.name}
+                    {event.organizer?.displayName}
                   </h3>
                   <p className="text-sm text-secondary-600 dark:text-secondary-400">
-                    {event.organizer.role}
+                    Event Organizer
                   </p>
                 </div>
               </div>
@@ -218,65 +212,31 @@ const EventDetails = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              <div>
-                <h3 className="text-lg font-medium text-secondary-900 dark:text-secondary-100 mb-4">
-                  Schedule
-                </h3>
-                <div className="space-y-4">
-                  {event.schedule.map((item, index) => (
-                    <div key={index} className="flex items-start space-x-4">
-                      <div className="flex-shrink-0 w-24 text-sm font-medium text-secondary-900 dark:text-secondary-100">
-                        {item.time}
-                      </div>
-                      <div className="flex-1 text-secondary-600 dark:text-secondary-400">
-                        {item.activity}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-medium text-secondary-900 dark:text-secondary-100 mb-4">
-                  Requirements
-                </h3>
-                <ul className="space-y-2">
-                  {event.requirements.map((item, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center text-secondary-600 dark:text-secondary-400"
-                    >
-                      <span className="w-2 h-2 bg-primary-500 rounded-full mr-3"></span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
             <div className="border-t border-secondary-200 dark:border-secondary-700 pt-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center text-secondary-600 dark:text-secondary-400">
                     <FaUsers className="w-5 h-5 mr-2" />
-                    <span>
-                      {event.participants}/{event.maxParticipants} participants
-                    </span>
+                    <span>{event.participantsCount || 0} participants</span>
                   </div>
                   <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900/20 dark:text-primary-400">
-                    {event.category}
+                    {event.eventType}
                   </span>
                 </div>
                 <button
                   onClick={handleJoinEvent}
+                  disabled={isJoining}
                   className={`px-6 py-2 rounded-lg font-medium ${
                     isJoined
                       ? "bg-red-500 hover:bg-red-600 text-white"
                       : "bg-primary-500 hover:bg-primary-600 text-white"
-                  }`}
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
-                  {isJoined ? "Leave Event" : "Join Event"}
+                  {isJoining
+                    ? "Processing..."
+                    : isJoined
+                    ? "Leave Event"
+                    : "Join Event"}
                 </button>
               </div>
             </div>
