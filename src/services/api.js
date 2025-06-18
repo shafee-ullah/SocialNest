@@ -1,6 +1,6 @@
 import { getAuth } from "firebase/auth";
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://socialnest-eight.vercel.app";
 
 const getHeaders = async () => {
   const auth = getAuth();

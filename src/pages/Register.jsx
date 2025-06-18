@@ -96,23 +96,26 @@ const Register = () => {
       const token = await user.getIdToken();
       // console.log("Creating user profile with:", { name, photoURL });
 
-      const response = await fetch("http://localhost:5000/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          email: user.email,
-          displayName: name,
-          photoURL: photoURL,
-          preferences: {
-            notifications: true,
-            emailUpdates: true,
+      const response = await fetch(
+        "https://socialnest-eight.vercel.app/users",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-        }),
-        credentials: "include",
-      });
+          body: JSON.stringify({
+            email: user.email,
+            displayName: name,
+            photoURL: photoURL,
+            preferences: {
+              notifications: true,
+              emailUpdates: true,
+            },
+          }),
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to create user profile");
