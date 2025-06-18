@@ -9,9 +9,11 @@ import {
 } from "react-icons/fa";
 import { getUpcomingEvents } from "../services/api.js";
 import { toast } from "react-hot-toast";
+import { useAuth } from "../provider/AuthProvider";
 
 const Events = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [events, setEvents] = useState([]);
@@ -21,8 +23,8 @@ const Events = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const data = await getUpcomingEvents(); // Optionally pass filters
-        setEvents(data); // Assumes API returns array of event objects
+        const data = await getUpcomingEvents();
+        setEvents(data);
       } catch (err) {
         setError("Failed to load events.");
         console.error(err);
@@ -56,9 +58,13 @@ const Events = () => {
   };
 
   const handleJoinEvent = (eventId) => {
-    // This will be implemented later
-    toast.error("Please login to join events");
-    navigate("/auth/login");
+    if (!user) {
+      toast.error("Please login to join events");
+      navigate("/auth/login");
+      return;
+    }
+    // Join event functionality will be implemented later
+    toast.error("Join event functionality coming soon!");
   };
 
   return (

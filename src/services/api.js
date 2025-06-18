@@ -21,10 +21,6 @@ const getHeaders = async () => {
       window.location.href = "/auth/login";
       throw new Error("Authentication failed. Please log in again.");
     }
-  } else {
-    // If no user is logged in, redirect to login
-    window.location.href = "/auth/login";
-    throw new Error("Please log in to continue");
   }
 
   return headers;

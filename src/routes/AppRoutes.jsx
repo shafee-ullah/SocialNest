@@ -94,16 +94,7 @@ const AppRoutes = () => {
           <Route path="/auth/register" element={<Register />} />
         </Route>
       </Routes>
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          className: "dark:bg-secondary-800 dark:text-secondary-50",
-          style: {
-            background: "var(--toast-bg)",
-            color: "var(--toast-color)",
-          },
-        }}
-      />
+      <Toaster />
     </>
   );
 };
