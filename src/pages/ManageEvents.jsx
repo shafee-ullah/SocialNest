@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaEdit, FaTrash, FaEye, FaUsers } from "react-icons/fa";
+import {getManageEvents, getUpcomingEvents} from "../services/api.js";
 
 const ManageEvents = () => {
   const [events, setEvents] = useState([]);
@@ -8,46 +9,19 @@ const ManageEvents = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // TODO: Replace with actual API call
-    // Mock data for now
-    const mockEvents = [
-      {
-        id: 1,
-        title: "Community Clean-up Day",
-        date: "2024-03-15",
-        time: "09:00 AM",
-        location: "Central Park",
-        category: "Environment",
-        participants: 15,
-        maxParticipants: 30,
-        status: "upcoming",
-      },
-      {
-        id: 2,
-        title: "Food Drive for Homeless",
-        date: "2024-03-20",
-        time: "10:00 AM",
-        location: "City Hall",
-        category: "Charity",
-        participants: 25,
-        maxParticipants: 50,
-        status: "upcoming",
-      },
-      {
-        id: 3,
-        title: "Youth Mentoring Program",
-        date: "2024-02-28",
-        time: "02:00 PM",
-        location: "Community Center",
-        category: "Education",
-        participants: 12,
-        maxParticipants: 20,
-        status: "completed",
-      },
-    ];
+    const fetchEvents = async () => {
+      try {
+        const data = await getManageEvents(); // Optionally pass filters
+        setEvents(data); // Assumes API returns array of event objects
+      } catch (err) {
+        setError("Failed to load events.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    setEvents(mockEvents);
-    setLoading(false);
+    fetchEvents();
   }, []);
 
   const handleDeleteEvent = async (eventId) => {
@@ -60,6 +34,10 @@ const ManageEvents = () => {
         console.error("Delete event error:", error);
       }
     }
+  };
+
+  const getEventStatus = (date) => {
+    return new Date(date) > new Date() ? "upcoming" : "past";
   };
 
   if (loading) {
@@ -119,7 +97,7 @@ const ManageEvents = () => {
           <div className="space-y-6">
             {events.map((event) => (
               <div
-                key={event.id}
+                key={event._id}
                 className="bg-white dark:bg-secondary-800 rounded-lg shadow-sm overflow-hidden"
               >
                 <div className="p-6">
@@ -129,31 +107,40 @@ const ManageEvents = () => {
                         {event.title}
                       </h3>
                       <p className="mt-1 text-sm text-secondary-600 dark:text-secondary-400">
-                        {event.date} at {event.time} • {event.location}
+                        {new Date(event.eventDate).toLocaleDateString(undefined, {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })} at{" "}
+                        {new Date(event.eventDate).toLocaleTimeString(undefined, {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })} • {event.location}
                       </p>
                     </div>
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        event.status === "upcoming"
+                      className={`mt-4 inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                        getEventStatus(event.date) === "upcoming"
                           ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
                           : "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400"
                       }`}
-                    >
-                      {event.status}
+                                >
+                       {getEventStatus(event.date)}
                     </span>
                   </div>
 
                   <div className="mt-4 flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center text-secondary-600 dark:text-secondary-400">
-                        <FaUsers className="w-4 h-4 mr-2" />
+                        <FaUsers className="w-4 h-4 mr-2"/>
                         <span className="text-sm">
-                          {event.participants}/{event.maxParticipants}{" "}
+                          {event?.participantsCount}/{'10'}{" "}
                           participants
                         </span>
                       </div>
                       <span className="text-sm text-secondary-600 dark:text-secondary-400">
-                        {event.category}
+                        {event.eventType}
                       </span>
                     </div>
 

@@ -9,6 +9,7 @@ import {
   FaUsers,
   FaImage,
 } from "react-icons/fa";
+import {createEvent} from "../services/api.js";
 
 const EVENT_TYPES = [
   "Cleanup",
@@ -35,10 +36,10 @@ const CreateEvent = () => {
   const [submitting, setSubmitting] = useState(false);
 
   // Local state for events (simulate DB)
-  const [events, setEvents] = useState(() => {
-    const stored = localStorage.getItem("socialnest_events");
-    return stored ? JSON.parse(stored) : [];
-  });
+  // const [events, setEvents] = useState(() => {
+  //   const stored = localStorage.getItem("socialnest_events");
+  //   return stored ? JSON.parse(stored) : [];
+  // });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -56,7 +57,7 @@ const CreateEvent = () => {
     return date && date > today;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Validation
     if (
@@ -74,22 +75,30 @@ const CreateEvent = () => {
       setError("Event date must be a future date.");
       return;
     }
-    setSubmitting(true);
-    // Simulate event creation
-    const newEvent = {
-      ...form,
-      date: form.date.toISOString(),
-      creatorEmail: user?.email || "",
-      id: Date.now(),
-      joinedUsers: [],
+    const postData = {
+      title: form.title,
+      description: form.description,
+      eventType: form.eventType,
+      thumbnailImage: form.thumbnail,
+      location: form.location,
+      eventDate: form.date.toISOString(), // Must be ISO format
     };
-    const updatedEvents = [...events, newEvent];
-    setEvents(updatedEvents);
-    localStorage.setItem("socialnest_events", JSON.stringify(updatedEvents));
-    setSuccess("Event created successfully! Redirecting to Upcoming Events...");
-    setTimeout(() => {
-      navigate("/events");
-    }, 1500);
+
+    try {
+      const createdEvent = await createEvent(postData); // Call the actual API
+      console.log("Created event:", createdEvent);
+
+      // Optional: Update local state/UI
+      setSuccess("Event created successfully! Redirecting to Upcoming Events...");
+      setTimeout(() => {
+        navigate("/events");
+      }, 1500);
+    } catch (error) {
+      console.error("Create event failed:", error);
+      setError("Failed to create event. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (!user) {

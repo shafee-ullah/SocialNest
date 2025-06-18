@@ -51,10 +51,29 @@ const handleResponse = async (response) => {
 };
 
 // Posts API
-export const getPosts = async (params = {}) => {
+export const getUpcomingEvents = async (params = {}) => {
   try {
     const queryParams = new URLSearchParams(params).toString();
-    const url = `${BASE_URL}/posts${queryParams ? `?${queryParams}` : ""}`;
+    const url = `${BASE_URL}/events${queryParams ? `?${queryParams}` : ""}`;
+
+    const headers = await getHeaders();
+    console.log("Fetching posts with headers:", headers);
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: headers,
+    });
+
+    return handleResponse(response);
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    throw error;
+  }
+};
+export const getManageEvents = async (params = {}) => {
+  try {
+    const queryParams = new URLSearchParams(params).toString();
+    const url = `${BASE_URL}/manage/events/${queryParams ? `?${queryParams}` : ""}`;
 
     const headers = await getHeaders();
     console.log("Fetching posts with headers:", headers);
@@ -71,10 +90,10 @@ export const getPosts = async (params = {}) => {
   }
 };
 
-export const getPost = async (id) => {
+export const getEvent = async (id) => {
   try {
     const headers = await getHeaders();
-    const response = await fetch(`${BASE_URL}/posts/${id}`, {
+    const response = await fetch(`${BASE_URL}/events/${id}`, {
       method: "GET",
       headers: headers,
     });
@@ -86,7 +105,7 @@ export const getPost = async (id) => {
   }
 };
 
-export const createPost = async (postData) => {
+export const createEvent = async (postData) => {
   try {
     const headers = await getHeaders();
 
@@ -99,13 +118,9 @@ export const createPost = async (postData) => {
 
     const enrichedPostData = {
       ...postData,
-      userEmail: user.email,
-      userName: user.displayName || "Anonymous",
-      userPhoto: user.photoURL,
-      createdAt: new Date().toISOString(),
     };
 
-    const response = await fetch(`${BASE_URL}/posts`, {
+    const response = await fetch(`${BASE_URL}/events`, {
       method: "POST",
       headers: headers,
       body: JSON.stringify(enrichedPostData),
