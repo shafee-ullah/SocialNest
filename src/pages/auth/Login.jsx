@@ -206,6 +206,15 @@ const Login = () => {
             </button>
           </div>
         </div>
+
+        <div className="text-center mt-8">
+          <Link
+            to="/"
+            className="inline-block px-6 py-2 bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-lg font-semibold hover:bg-teal-100 dark:hover:bg-teal-800 transition"
+          >
+            ← Back to Home
+          </Link>
+        </div>
       </div>
     </div>
   );
