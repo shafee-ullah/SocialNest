@@ -30,12 +30,21 @@ const features = [
 ];
 
 const galleryImages = [
-  "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=600&q=80", // Community cleanup
+  "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=600&q=80", // Food donation
+  "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=600&q=80", // Tree plantation
+  "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=600&q=80", // Education workshop
+  "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=600&q=80", // Health camp
+  "https://images.unsplash.com/photo-1615461066841-6116e61058f4?auto=format&fit=crop&w=600&q=80", // Blood donation
+];
+
+const galleryTitles = [
+  "Community Cleanup Drive",
+  "Food Donation Campaign",
+  "Tree Plantation Event",
+  "Education Workshop",
+  "Health Awareness Camp",
+  "Blood Donation Drive",
 ];
 
 const Home = () => {
@@ -44,8 +53,8 @@ const Home = () => {
       {/* Banner Section */}
       <section className="relative h-[60vh] flex items-center justify-center bg-gradient-to-r from-teal-600 to-green-400">
         <img
-          src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=1500&q=80"
-          alt="Banner"
+          src="https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=1500&q=80"
+          alt="Community Service Banner"
           className="absolute inset-0 w-full h-full object-cover opacity-60"
         />
         <div className="relative z-10 text-center text-white max-w-2xl mx-auto">
@@ -108,11 +117,13 @@ const Home = () => {
               >
                 <img
                   src={img}
-                  alt={`Event ${idx + 1}`}
+                  alt={galleryTitles[idx]}
                   className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-teal-900/70 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <p className="text-white font-semibold">Event {idx + 1}</p>
+                  <p className="text-white font-semibold">
+                    {galleryTitles[idx]}
+                  </p>
                 </div>
               </div>
             ))}
