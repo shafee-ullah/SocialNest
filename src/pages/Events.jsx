@@ -7,7 +7,7 @@ import {
   FaUsers,
   FaEye,
 } from "react-icons/fa";
-import { getUpcomingEvents } from "../services/api.js";
+import { getUpcomingEvents, joinEvent } from "../services/api.js";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../provider/AuthProvider";
 
@@ -19,6 +19,7 @@ const Events = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [joiningEventId, setJoiningEventId] = useState(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -57,14 +58,38 @@ const Events = () => {
     navigate(`/events/${eventId}`);
   };
 
-  const handleJoinEvent = (eventId) => {
+  const handleJoinEvent = async (eventId) => {
     if (!user) {
       toast.error("Please login to join events");
       navigate("/auth/login");
       return;
     }
-    // Join event functionality will be implemented later
-    toast.error("Join event functionality coming soon!");
+
+    try {
+      setJoiningEventId(eventId);
+      const response = await joinEvent(eventId);
+
+      // Update the events list to reflect the join
+      setEvents(
+        events.map((event) => {
+          if (event._id === eventId) {
+            return {
+              ...event,
+              isJoined: true,
+              participantsCount: (event.participantsCount || 0) + 1,
+            };
+          }
+          return event;
+        })
+      );
+
+      toast.success("Successfully joined the event!");
+    } catch (err) {
+      toast.error(err.message || "Failed to join event");
+      console.error(err);
+    } finally {
+      setJoiningEventId(null);
+    }
   };
 
   return (

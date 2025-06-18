@@ -88,27 +88,6 @@ cd ../server
 npm run dev
 ```
 
-## Project Structure
-
-```
-├── client/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── provider/
-│   │   ├── routes/
-│   │   ├── services/
-│   │   ├── config/
-│   │   └── assets/
-│   └── public/
-└── server/
-    ├── src/
-    │   ├── controllers/
-    │   ├── models/
-    │   ├── routes/
-    │   └── middleware/
-    └── config/
-```
 
 ## Contributing
 

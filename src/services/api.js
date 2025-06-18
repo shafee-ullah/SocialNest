@@ -106,7 +106,7 @@ export const getManageEvents = async (params = {}) => {
 export const getJoinedEvents = async () => {
   try {
     const headers = await getHeaders();
-    const response = await fetch(`${BASE_URL}/events/joined`, {
+    const response = await fetch(`${BASE_URL}/joined/events`, {
       method: "GET",
       headers: headers,
     });
@@ -140,9 +140,23 @@ export const getEvent = async (id) => {
 export const joinEvent = async (eventId) => {
   try {
     const headers = await getHeaders();
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) {
+      throw new Error("User must be logged in to join events");
+    }
+
     const response = await fetch(`${BASE_URL}/events/${eventId}/join`, {
       method: "POST",
-      headers: headers,
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: user.email,
+        eventId: eventId,
+      }),
     });
 
     if (!response.ok) {
