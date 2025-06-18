@@ -8,9 +8,9 @@ import {
   FaEdit,
   FaTrash,
 } from "react-icons/fa";
-import { getEventById, deleteEvent } from "../services/api";
+import { getEventById, deleteEvent, joinEvent } from "../services/api";
 import { toast } from "react-hot-toast";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../provider/AuthProvider";
 
 const EventDetails = () => {
   const { id } = useParams();
@@ -19,12 +19,15 @@ const EventDetails = () => {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
+  const [isJoined, setIsJoined] = useState(false);
 
   useEffect(() => {
     const fetchEvent = async () => {
       try {
         const data = await getEventById(id);
         setEvent(data);
+        setIsJoined(data.isJoined || false);
       } catch (err) {
         setError("Failed to load event details.");
         toast.error("Failed to load event details.");
@@ -49,6 +52,28 @@ const EventDetails = () => {
     } catch (err) {
       toast.error("Failed to delete event.");
       console.error(err);
+    }
+  };
+
+  const handleJoinEvent = async () => {
+    if (!user) {
+      toast.error("Please login to join events");
+      navigate("/auth/login");
+      return;
+    }
+
+    try {
+      setIsJoining(true);
+      await joinEvent(id);
+      setIsJoined(!isJoined);
+      toast.success(
+        isJoined ? "Left event successfully" : "Joined event successfully"
+      );
+    } catch (err) {
+      toast.error("Failed to join event");
+      console.error(err);
+    } finally {
+      setIsJoining(false);
     }
   };
 
@@ -113,20 +138,20 @@ const EventDetails = () => {
             </h1>
             {isEventCreator && (
               <div className="flex space-x-2">
-                <button
+                {/* <button
                   onClick={() => navigate(`/events/edit/${event._id}`)}
                   className="bg-primary-500 text-white px-4 py-2 rounded-md hover:bg-primary-600 transition-colors flex items-center"
                 >
                   <FaEdit className="mr-2" />
                   Edit Event
-                </button>
-                <button
+                </button> */}
+                {/* <button
                   onClick={handleDelete}
                   className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center"
                 >
                   <FaTrash className="mr-2" />
                   Delete Event
-                </button>
+                </button> */}
               </div>
             )}
           </div>
@@ -180,18 +205,15 @@ const EventDetails = () => {
           {!isEventCreator && (
             <div className="mt-8">
               <button
-                onClick={() => {
-                  if (!user) {
-                    toast.error("Please login to join events");
-                    navigate("/auth/login");
-                    return;
-                  }
-                  // TODO: Implement join event functionality
-                  toast.error("Join event functionality coming soon!");
-                }}
-                className="w-full bg-primary-500 text-white py-3 rounded-md hover:bg-primary-600 transition-colors"
+                onClick={handleJoinEvent}
+                disabled={isJoining}
+                className={`w-full bg-primary-500 text-white py-3 rounded-md hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                Join Event
+                {isJoining
+                  ? "Processing..."
+                  : isJoined
+                  ? "Leave Event"
+                  : "Join Event"}
               </button>
             </div>
           )}

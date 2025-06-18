@@ -21,6 +21,10 @@ const getHeaders = async () => {
       window.location.href = "/auth/login";
       throw new Error("Authentication failed. Please log in again.");
     }
+  } else {
+    // If no user is logged in, redirect to login
+    window.location.href = "/auth/login";
+    throw new Error("Please log in to continue");
   }
 
   return headers;
@@ -145,10 +149,16 @@ export const joinEvent = async (eventId) => {
       headers: headers,
     });
 
-    return handleResponse(response);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "Failed to join event");
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("Error joining event:", error);
-    throw error;
+    throw new Error(error.message || "Failed to join event");
   }
 };
 
