@@ -3,6 +3,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import AuthProvider from "./provider/AuthProvider";
 import ThemeProvider from "./provider/ThemeProvider";
 import AppRoutes from "./routes/AppRoutes";
+import EventDetails from "./pages/EventDetails";
 
 const App = () => {
   return (

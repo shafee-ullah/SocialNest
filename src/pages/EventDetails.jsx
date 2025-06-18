@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  FaCalendar,
-  FaClock,
+  FaCalendarAlt,
   FaMapMarkerAlt,
   FaUsers,
-  FaHeart,
-  FaShare,
   FaArrowLeft,
+  FaEdit,
+  FaTrash,
 } from "react-icons/fa";
-import { getEvent, joinEvent } from "../services/api";
-import { useAuth } from "../provider/AuthProvider";
+import { getEventById, deleteEvent } from "../services/api";
 import { toast } from "react-hot-toast";
+import { useAuth } from "../contexts/AuthContext";
 
 const EventDetails = () => {
   const { id } = useParams();
@@ -19,228 +18,183 @@ const EventDetails = () => {
   const { user } = useAuth();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isJoined, setIsJoined] = useState(false);
-  const [isJoining, setIsJoining] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchEventDetails = async () => {
-      if (!id) {
-        setError("Event ID is missing");
-        setLoading(false);
-        return;
-      }
-
+    const fetchEvent = async () => {
       try {
-        const data = await getEvent(id);
+        const data = await getEventById(id);
         setEvent(data);
-        setIsJoined(data.isJoined || false);
-      } catch (error) {
-        setError("Failed to load event details");
-        console.error("Error fetching event details:", error);
-        toast.error("Failed to load event details");
+      } catch (err) {
+        setError("Failed to load event details.");
+        toast.error("Failed to load event details.");
+        console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEventDetails();
+    fetchEvent();
   }, [id]);
 
-  const handleJoinEvent = async () => {
-    if (!user) {
-      toast.error("Please login to join events");
-      navigate("/auth/login");
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this event?")) {
       return;
     }
 
     try {
-      setIsJoining(true);
-      await joinEvent(id);
-      setIsJoined(!isJoined);
-      toast.success(
-        isJoined ? "Left event successfully" : "Joined event successfully"
-      );
-    } catch (error) {
-      console.error("Join event error:", error);
-      toast.error("Failed to join event");
-    } finally {
-      setIsJoining(false);
-    }
-  };
-
-  const handleLikeEvent = () => {
-    if (!user) {
-      toast.error("Please login to like events");
-      navigate("/auth/login");
-      return;
-    }
-    setIsLiked(!isLiked);
-  };
-
-  const handleShareEvent = async () => {
-    try {
-      await navigator.share({
-        title: event.title,
-        text: event.description,
-        url: window.location.href,
-      });
-    } catch (error) {
-      console.error("Share error:", error);
+      await deleteEvent(id);
+      toast.success("Event deleted successfully!");
+      navigate("/events");
+    } catch (err) {
+      toast.error("Failed to delete event.");
+      console.error(err);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="animate-pulse space-y-4">
-            <div className="h-96 bg-secondary-200 dark:bg-secondary-700 rounded-lg"></div>
-            <div className="h-8 bg-secondary-200 dark:bg-secondary-700 rounded w-3/4"></div>
-            <div className="h-4 bg-secondary-200 dark:bg-secondary-700 rounded w-1/2"></div>
-          </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+          <p className="mt-4 text-secondary-600 dark:text-secondary-400">
+            Loading event details...
+          </p>
         </div>
       </div>
     );
   }
 
-  if (error) {
+  if (error || !event) {
     return (
-      <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-lg">
-            {error}
-          </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <p className="text-red-500">{error || "Event not found"}</p>
+          <button
+            onClick={() => navigate("/events")}
+            className="mt-4 text-primary-500 hover:text-primary-600"
+          >
+            <FaArrowLeft className="inline mr-2" />
+            Back to Events
+          </button>
         </div>
       </div>
     );
   }
 
-  if (!event) {
-    return null;
-  }
+  const isEventCreator = user && event.creatorId === user._id;
 
   return (
-    <div className="min-h-screen bg-secondary-50 dark:bg-secondary-900 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center text-secondary-600 dark:text-secondary-400 hover:text-primary-500 dark:hover:text-primary-400 mb-6"
-        >
-          <FaArrowLeft className="mr-2" />
-          Back to Events
-        </button>
+    <div className="container mx-auto px-4 py-8">
+      <button
+        onClick={() => navigate("/events")}
+        className="mb-6 text-primary-500 hover:text-primary-600 flex items-center"
+      >
+        <FaArrowLeft className="mr-2" />
+        Back to Events
+      </button>
 
-        <div className="bg-white dark:bg-secondary-800 rounded-lg shadow-sm overflow-hidden">
-          <div className="relative h-96">
-            <img
-              src={event.thumbnailImage}
-              alt={event.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-            <div className="absolute bottom-0 left-0 right-0 p-6">
-              <h1 className="text-3xl font-bold text-white mb-2">
-                {event.title}
-              </h1>
-              <div className="flex items-center space-x-4 text-white/90">
-                <span className="flex items-center">
-                  <FaCalendar className="mr-2" />
-                  {new Date(event.eventDate).toLocaleDateString(undefined, {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </span>
-                <span className="flex items-center">
-                  <FaClock className="mr-2" />
-                  {new Date(event.eventDate).toLocaleTimeString(undefined, {
-                    hour: "numeric",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
-                </span>
-                <span className="flex items-center">
-                  <FaMapMarkerAlt className="mr-2" />
-                  {event.location}
-                </span>
+      <div className="bg-white dark:bg-secondary-800 rounded-lg shadow-lg overflow-hidden">
+        <div className="relative h-96">
+          <img
+            src={event.thumbnailImage}
+            alt={event.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute top-4 right-4 bg-primary-500 text-white px-4 py-2 rounded-full">
+            {event.eventType}
+          </div>
+        </div>
+
+        <div className="p-8">
+          <div className="flex justify-between items-start mb-6">
+            <h1 className="text-3xl font-bold text-secondary-900 dark:text-white">
+              {event.title}
+            </h1>
+            {isEventCreator && (
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => navigate(`/events/edit/${event._id}`)}
+                  className="bg-primary-500 text-white px-4 py-2 rounded-md hover:bg-primary-600 transition-colors flex items-center"
+                >
+                  <FaEdit className="mr-2" />
+                  Edit Event
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center"
+                >
+                  <FaTrash className="mr-2" />
+                  Delete Event
+                </button>
               </div>
-            </div>
+            )}
           </div>
 
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-4">
-                <img
-                  src={event.organizer?.photoURL}
-                  alt={event.organizer?.displayName}
-                  className="w-12 h-12 rounded-full"
-                />
-                <div>
-                  <h3 className="text-lg font-medium text-secondary-900 dark:text-secondary-100">
-                    {event.organizer?.displayName}
-                  </h3>
-                  <p className="text-sm text-secondary-600 dark:text-secondary-400">
-                    Event Organizer
-                  </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h2 className="text-xl font-semibold mb-4 text-secondary-900 dark:text-white">
+                Event Details
+              </h2>
+              <div className="space-y-4">
+                <div className="flex items-center text-secondary-600 dark:text-secondary-400">
+                  <FaCalendarAlt className="mr-3 text-xl" />
+                  <div>
+                    <p className="font-medium">
+                      {new Date(event.eventDate).toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </p>
+                    <p>
+                      {new Date(event.eventDate).toLocaleTimeString(undefined, {
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={handleLikeEvent}
-                  className={`p-2 rounded-full ${
-                    isLiked
-                      ? "text-red-500 hover:text-red-600"
-                      : "text-secondary-600 dark:text-secondary-400 hover:text-red-500 dark:hover:text-red-400"
-                  }`}
-                >
-                  <FaHeart className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={handleShareEvent}
-                  className="p-2 text-secondary-600 dark:text-secondary-400 hover:text-primary-500 dark:hover:text-primary-400 rounded-full"
-                >
-                  <FaShare className="w-5 h-5" />
-                </button>
+                <div className="flex items-center text-secondary-600 dark:text-secondary-400">
+                  <FaMapMarkerAlt className="mr-3 text-xl" />
+                  <span>{event.location}</span>
+                </div>
+                <div className="flex items-center text-secondary-600 dark:text-secondary-400">
+                  <FaUsers className="mr-3 text-xl" />
+                  <span>{event?.participantsCount ?? 0} participants</span>
+                </div>
               </div>
             </div>
 
-            <div className="prose dark:prose-invert max-w-none mb-8">
-              <p className="text-secondary-600 dark:text-secondary-400">
+            <div>
+              <h2 className="text-xl font-semibold mb-4 text-secondary-900 dark:text-white">
+                Description
+              </h2>
+              <p className="text-secondary-600 dark:text-secondary-400 whitespace-pre-line">
                 {event.description}
               </p>
             </div>
-
-            <div className="border-t border-secondary-200 dark:border-secondary-700 pt-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center text-secondary-600 dark:text-secondary-400">
-                    <FaUsers className="w-5 h-5 mr-2" />
-                    <span>{event.participantsCount || 0} participants</span>
-                  </div>
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900/20 dark:text-primary-400">
-                    {event.eventType}
-                  </span>
-                </div>
-                <button
-                  onClick={handleJoinEvent}
-                  disabled={isJoining}
-                  className={`px-6 py-2 rounded-lg font-medium ${
-                    isJoined
-                      ? "bg-red-500 hover:bg-red-600 text-white"
-                      : "bg-primary-500 hover:bg-primary-600 text-white"
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {isJoining
-                    ? "Processing..."
-                    : isJoined
-                    ? "Leave Event"
-                    : "Join Event"}
-                </button>
-              </div>
-            </div>
           </div>
+
+          {!isEventCreator && (
+            <div className="mt-8">
+              <button
+                onClick={() => {
+                  if (!user) {
+                    toast.error("Please login to join events");
+                    navigate("/auth/login");
+                    return;
+                  }
+                  // TODO: Implement join event functionality
+                  toast.error("Join event functionality coming soon!");
+                }}
+                className="w-full bg-primary-500 text-white py-3 rounded-md hover:bg-primary-600 transition-colors"
+              >
+                Join Event
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

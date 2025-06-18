@@ -228,7 +228,8 @@ export const deleteEvent = async (id) => {
       headers: headers,
     });
 
-    return handleResponse(response);
+    await handleResponse(response);
+    return true;
   } catch (error) {
     console.error("Error deleting event:", error);
     throw error;
@@ -264,6 +265,24 @@ export const getUser = async (email) => {
     return handleResponse(response);
   } catch (error) {
     console.error("Error fetching user:", error);
+    throw error;
+  }
+};
+
+export const getEventById = async (id) => {
+  try {
+    const headers = await getHeaders();
+    const response = await fetch(`${BASE_URL}/events/${id}`, {
+      headers: headers,
+    });
+
+    const result = await handleResponse(response);
+    if (result === null) {
+      throw new Error("Event not found");
+    }
+    return result;
+  } catch (error) {
+    console.error("Error fetching event:", error);
     throw error;
   }
 };

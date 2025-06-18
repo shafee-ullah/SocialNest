@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FaSearch,
   FaCalendarAlt,
   FaMapMarkerAlt,
   FaUsers,
+  FaEye,
 } from "react-icons/fa";
-import {getUpcomingEvents} from "../services/api.js";
+import { getUpcomingEvents } from "../services/api.js";
+import { toast } from "react-hot-toast";
 
 const Events = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [events, setEvents] = useState([]);
@@ -46,6 +50,16 @@ const Events = () => {
       selectedCategory === "all" || event.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const handleViewEvent = (eventId) => {
+    navigate(`/events/${eventId}`);
+  };
+
+  const handleJoinEvent = (eventId) => {
+    // This will be implemented later
+    toast.error("Please login to join events");
+    navigate("/auth/login");
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -92,42 +106,55 @@ const Events = () => {
               <div className="absolute top-4 right-4 bg-primary-500 text-white px-3 py-1 rounded-full text-sm">
                 {/*{event.category.charAt(0).toUpperCase() +*/}
                 {/*  event.category.slice(1)}*/}
-                { event.eventType}
+                {event.eventType}
               </div>
             </div>
             <div className="p-6">
               <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
-              <p className="text-secondary-600 dark:text-secondary-400 mb-4">
+              <p className="text-secondary-600 dark:text-secondary-400 mb-4 line-clamp-2">
                 {event.description}
               </p>
               <div className="space-y-2">
                 <div className="flex items-center text-secondary-600 dark:text-secondary-400">
                   <FaCalendarAlt className="mr-2" />
                   <span>
-                  {new Date(event.eventDate).toLocaleDateString(undefined, {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })} at{" "}
+                    {new Date(event.eventDate).toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}{" "}
+                    at{" "}
                     {new Date(event.eventDate).toLocaleTimeString(undefined, {
                       hour: "numeric",
                       minute: "2-digit",
                       hour12: true,
                     })}
-                </span>
+                  </span>
                 </div>
                 <div className="flex items-center text-secondary-600 dark:text-secondary-400">
-                  <FaMapMarkerAlt className="mr-2"/>
+                  <FaMapMarkerAlt className="mr-2" />
                   <span>{event.location}</span>
                 </div>
                 <div className="flex items-center text-secondary-600 dark:text-secondary-400">
-                  <FaUsers className="mr-2"/>
+                  <FaUsers className="mr-2" />
                   <span>{event?.participantsCount ?? 0} participants</span>
                 </div>
               </div>
-              <button className="mt-4 w-full bg-primary-500 text-white py-2 rounded-md hover:bg-primary-600 transition-colors">
-                Join Event
-              </button>
+              <div className="mt-4 flex space-x-2">
+                <button
+                  onClick={() => handleViewEvent(event._id)}
+                  className="flex-1 flex items-center justify-center bg-secondary-100 dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 py-2 rounded-md hover:bg-secondary-200 dark:hover:bg-secondary-600 transition-colors"
+                >
+                  <FaEye className="mr-2" />
+                  View Event
+                </button>
+                <button
+                  onClick={() => handleJoinEvent(event._id)}
+                  className="flex-1 bg-primary-500 text-white py-2 rounded-md hover:bg-primary-600 transition-colors"
+                >
+                  Join Event
+                </button>
+              </div>
             </div>
           </div>
         ))}
