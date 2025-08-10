@@ -15,7 +15,7 @@ const Footer = () => {
   return (
     <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 ">
           {/* Company Info */}
           <div className="space-y-4">
             <Link to="/" className="inline-block">
@@ -58,7 +58,7 @@ const Footer = () => {
           </div>
 
           {/* Support */}
-          <div >
+          <div className="lg:ml-20">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Support
             </h3>
@@ -107,7 +107,7 @@ const Footer = () => {
               <li className="flex items-start space-x-3">
                 <FaMapMarkerAlt className="text-blue-600 dark:text-blue-400 mt-1" />
                 <span className="text-gray-600 dark:text-gray-400 text-sm">
-                  123 Property Street, City, Country
+                  123 Community Street, City, Country
                 </span>
               </li>
               <li className="flex items-center space-x-3">
@@ -119,7 +119,7 @@ const Footer = () => {
               <li className="flex items-center space-x-3">
                 <FaEnvelope className="text-blue-600 dark:text-blue-400" />
                 <span className="text-gray-600 dark:text-gray-400 text-sm">
-                  support@SocialNest.com
+                  support@socialnest.com
                 </span>
               </li>
             </ul>
@@ -128,11 +128,12 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
-          <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className="text-center">
             <p className="text-gray-600 dark:text-gray-400 text-sm">
               {new Date().getFullYear()} SocialNest. All rights reserved.
             </p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
+          </div>
+          {/* <div className="flex space-x-6 mt-4 md:mt-0">
               <Link
                 to="/privacy"
                 className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-sm"
@@ -151,8 +152,7 @@ const Footer = () => {
               >
                 Cookie Policy
               </Link>
-            </div>
-          </div>
+            </div> */}
         </div>
       </div>
     </footer>

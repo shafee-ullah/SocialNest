@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEnvelope, FaLock, FaUser, FaGoogle, FaGithub } from "react-icons/fa";
+import { useAuth } from "../../provider/AuthProvider";
 
 const Register = () => {
+  const { createUser, updateUserProfile } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -11,7 +13,7 @@ const Register = () => {
     confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,7 +38,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+    setError("");
 
     if (!validateForm()) {
       setLoading(false);
@@ -44,13 +46,25 @@ const Register = () => {
     }
 
     try {
-      // TODO: Implement registration functionality
-      // const response = await register(formData);
-      // console.log("Registration data:", formData);
-      navigate("/auth/login");
+      // Create user with email and password
+      await createUser(formData.email, formData.password);
+      
+      // Update user profile with display name
+      await updateUserProfile(formData.name.trim(), null);
+      
+      // Navigate to home page after successful registration
+      navigate("/");
     } catch (error) {
-      setError("Failed to create account");
       console.error("Registration error:", error);
+      if (error.code === "auth/email-already-in-use") {
+        setError("An account with this email already exists. Please log in instead.");
+      } else if (error.code === "auth/weak-password") {
+        setError("Password should be at least 6 characters long.");
+      } else if (error.code === "auth/invalid-email") {
+        setError("Please enter a valid email address.");
+      } else {
+        setError("Failed to create an account. Please try again later.");
+      }
     } finally {
       setLoading(false);
     }
@@ -69,6 +83,30 @@ const Register = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-secondary-50 dark:bg-secondary-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
+        {/* Back to Home Button */}
+        <div className="absolute top-4 left-4">
+          <Link
+            to="/"
+            className="inline-flex items-center text-sm font-medium text-secondary-600 dark:text-secondary-400 hover:text-primary-500 dark:hover:text-primary-400"
+          >
+            <svg
+              className="h-5 w-5 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            Back to Home
+          </Link>
+        </div>
+        
         <div>
           <h2 className="mt-6 text-center text-3xl font-bold text-secondary-900 dark:text-secondary-100">
             Create your account
@@ -108,7 +146,7 @@ const Register = () => {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-4 py-2 pl-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="appearance-none block w-full px-4 py-2 pl-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Enter your full name"
                 />
                 <FaUser className="absolute left-3 top-3 text-secondary-400" />
@@ -131,7 +169,7 @@ const Register = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-4 py-2 pl-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="appearance-none block w-full px-4 py-2 pl-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Enter your email"
                 />
                 <FaEnvelope className="absolute left-3 top-3 text-secondary-400" />
@@ -154,7 +192,7 @@ const Register = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-4 py-2 pl-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="appearance-none block w-full px-4 py-2 pl-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Create a password"
                 />
                 <FaLock className="absolute left-3 top-3 text-secondary-400" />
@@ -177,7 +215,7 @@ const Register = () => {
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-4 py-2 pl-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="appearance-none block w-full px-4 py-2 pl-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Confirm your password"
                 />
                 <FaLock className="absolute left-3 top-3 text-secondary-400" />
@@ -189,7 +227,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Creating account..." : "Create account"}
             </button>

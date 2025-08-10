@@ -14,6 +14,7 @@ import {
   FaCheckCircle,
   FaBars,
   FaTimes,
+  FaQuestionCircle,
 } from "react-icons/fa";
 import { useAuth } from "../provider/AuthProvider";
 import ThemeToggle from "./ThemeToggle";
@@ -154,6 +155,15 @@ const Navbar = () => {
         <FaBuilding className="mr-2" />
         About Us
       </Link>
+      {!user && (
+        <Link
+          to="/help"
+          className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
+        >
+          <FaQuestionCircle className="mr-2" />
+          Help Center
+        </Link>
+      )}
       <div className="px-3 py-2">
         <ThemeToggle />
       </div>

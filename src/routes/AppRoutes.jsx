@@ -16,6 +16,10 @@ import AuthLayout from "../layouts/AuthLayout";
 import MainLayout from "../layouts/MainLayout";
 import NotFound from "../pages/NotFound";
 import About from "../pages/About";
+import Faq from "../pages/Faq";
+import Privacy from "../pages/Privacy";
+import Terms from "../pages/Terms";
+import Help from "../pages/Help";
 
 const AppRoutes = () => {
   return (
@@ -25,6 +29,10 @@ const AppRoutes = () => {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/faq" element={<Faq />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/help" element={<Help />} />
           <Route
             path="/events/:id"
             element={
