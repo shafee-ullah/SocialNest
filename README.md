@@ -95,7 +95,7 @@ npm run dev
 ### Screenshots
 
 ### Homepage
-![SocialNest Homepage](./src/assets/SocialNest.png)
+![SocialNest Homepage](./src/assets/snss.png)
 
 ## 🤝 Contributing
 
