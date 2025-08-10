@@ -30,8 +30,8 @@ const Navbar = () => {
   }, [user?.photoURL]);
 
   const handleImageError = (e) => {
-    console.error('Error loading profile image:', e);
-    console.log('Image source that failed to load:', e.target.src);
+    console.error("Error loading profile image:", e);
+    console.log("Image source that failed to load:", e.target.src);
     setImageError(true);
   };
 
@@ -48,16 +48,16 @@ const Navbar = () => {
     // Process Google profile picture URL
     const getProcessedPhotoUrl = (url) => {
       if (!url) return null;
-      
+
       // If it's a Google profile picture, modify the URL to get a larger size
-      if (url.includes('googleusercontent.com')) {
+      if (url.includes("googleusercontent.com")) {
         try {
           // Remove any existing size parameter
-          const cleanUrl = url.split('=')[0];
+          const cleanUrl = url.split("=")[0];
           // Return URL with a larger size (s400-c)
           return `${cleanUrl}=s400-c`;
         } catch (error) {
-          console.error('Error processing Google profile URL:', error);
+          console.error("Error processing Google profile URL:", error);
           return url;
         }
       }
@@ -65,13 +65,13 @@ const Navbar = () => {
     };
 
     const photoUrl = getProcessedPhotoUrl(user.photoURL);
-    
+
     if (photoUrl && !imageError) {
       return (
         <div className="relative">
           <img
             src={photoUrl}
-            alt={user.displayName || 'Profile'}
+            alt={user.displayName || "Profile"}
             className="w-10 h-10 rounded-full border-2 border-teal-500 object-cover"
             onError={handleImageError}
             loading="lazy"
@@ -107,12 +107,20 @@ const Navbar = () => {
   const navLinks = (
     <>
       <Link
+        to="/"
+        className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
+      >
+        <FaHome className="mr-2" />
+        Home
+      </Link>
+      <Link
         to="/events"
         className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
       >
         <FaCalendarAlt className="mr-2" />
         Upcoming Events
       </Link>
+
       {user && (
         <>
           <Link
@@ -138,6 +146,14 @@ const Navbar = () => {
           </Link>
         </>
       )}
+
+      <Link
+        to="/about"
+        className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
+      >
+        <FaBuilding className="mr-2" />
+        About Us
+      </Link>
       <div className="px-3 py-2">
         <ThemeToggle />
       </div>
@@ -198,7 +214,7 @@ const Navbar = () => {
                   onMouseLeave={() => setIsDropdownOpen(false)}
                 >
                   <div className="px-4 py-2 border-b border-gray-100 dark:border-teal-800 text-gray-900 dark:text-white font-semibold">
-                    {user.displayName || 'User'}
+                    {user.displayName || "User"}
                   </div>
                   <button
                     onClick={handleLogout}

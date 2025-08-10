@@ -15,6 +15,7 @@ import Settings from "../pages/Settings";
 import AuthLayout from "../layouts/AuthLayout";
 import MainLayout from "../layouts/MainLayout";
 import NotFound from "../pages/NotFound";
+import About from "../pages/About";
 
 const AppRoutes = () => {
   return (
@@ -22,6 +23,7 @@ const AppRoutes = () => {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
           <Route path="/events" element={<Events />} />
           <Route
             path="/events/:id"
@@ -83,8 +85,8 @@ const AppRoutes = () => {
 
         {/* Auth routes */}
         <Route element={<AuthLayout />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/auth/login" element={<Login />} />
+          <Route path="/auth/register" element={<Register />} />
         </Route>
 
         {/* 404 - Catch all unmatched routes */}
