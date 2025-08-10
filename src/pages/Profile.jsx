@@ -60,7 +60,7 @@ const Profile = () => {
         setError(null);
         const token = await user.getIdToken();
         const response = await fetch(
-          `http://localhost:5000/users/${user.email}`,
+          `https://socialnest-eight.vercel.app/users/${user.email}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -133,7 +133,7 @@ const Profile = () => {
 
       // Then update backend profile
       const response = await fetch(
-        `http://localhost:5000/users/${user.email}`,
+        `https://socialnest-eight.vercel.app/users/${user.email}`,
         {
           method: "PUT",
           headers: {

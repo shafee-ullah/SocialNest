@@ -97,7 +97,7 @@ const Register = () => {
       // console.log("Creating user profile with:", { name, photoURL });
 
       const response = await fetch(
-        "http://localhost:5000/users",
+        "https://socialnest-eight.vercel.app/users",
         {
           method: "POST",
           headers: {

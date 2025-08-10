@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FaEnvelope, FaLock, FaGoogle, FaGithub, FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaGoogle, FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
 import { useAuth } from "../../provider/AuthProvider";
 
 const Login = () => {
@@ -80,14 +80,6 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-secondary-50 dark:bg-secondary-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 relative">
-        {/* Back to Home Button */}
-        <button
-          onClick={() => navigate("/")}
-          className="absolute -top-10 left-0 flex items-center text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
-        >
-          <FaArrowLeft className="mr-1" /> Back to Home
-        </button>
-        
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-secondary-900 dark:text-white">
             Sign in to your account
@@ -169,7 +161,7 @@ const Login = () => {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300 rounded"
+                className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-secondary-300 rounded"
               />
               <label
                 htmlFor="remember-me"
@@ -186,7 +178,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Signing in..." : "Sign in"}
             </button>
@@ -205,30 +197,16 @@ const Login = () => {
             </div>
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            <div>
-              <button
-                onClick={handleGoogleSignIn}
-                type="button"
-                disabled={loading}
-                className="w-full inline-flex justify-center py-2 px-4 border border-secondary-300 dark:border-secondary-600 rounded-md shadow-sm bg-white dark:bg-secondary-700 text-sm font-medium text-secondary-500 dark:text-white hover:bg-secondary-50 dark:hover:bg-secondary-600 disabled:opacity-50"
-              >
-                <span className="sr-only">Sign in with Google</span>
-                <FaGoogle className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div>
-              <button
-                type="button"
-                disabled
-                className="w-full inline-flex justify-center py-2 px-4 border border-secondary-300 dark:border-secondary-600 rounded-md shadow-sm bg-white dark:bg-secondary-700 text-sm font-medium text-secondary-500 dark:text-white hover:bg-secondary-50 dark:hover:bg-secondary-600 opacity-50 cursor-not-allowed"
-                title="Coming soon"
-              >
-                <span className="sr-only">Sign in with GitHub</span>
-                <FaGithub className="h-5 w-5" />
-              </button>
-            </div>
+          <div className="mt-6">
+            <button
+              onClick={handleGoogleSignIn}
+              type="button"
+              disabled={loading}
+              className="w-full inline-flex justify-center items-center py-2 px-4 border border-secondary-300 dark:border-secondary-600 rounded-md shadow-sm bg-white dark:bg-secondary-700 text-sm font-medium text-secondary-700 dark:text-white hover:bg-secondary-50 dark:hover:bg-secondary-600 disabled:opacity-50"
+            >
+              <FaGoogle className="w-5 h-5 mr-2" />
+              Continue with Google
+            </button>
           </div>
         </div>
 
@@ -237,11 +215,19 @@ const Login = () => {
             Don't have an account?{" "}
             <Link
               to="/auth/register"
-              className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+              className="font-medium text-teal-600 hover:text-teal-700"
             >
               Sign up
             </Link>
           </p>
+          <div className="mt-6">
+            <button
+              onClick={() => navigate("/")}
+              className="inline-flex items-center text-sm bg-teal-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-teal-700 transition shadow"
+            >
+              <FaArrowLeft className="mr-1" /> Back to Home
+            </button>
+          </div>
         </div>
       </div>
     </div>

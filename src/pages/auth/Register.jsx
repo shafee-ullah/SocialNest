@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaEnvelope, FaLock, FaUser, FaGoogle, FaGithub, FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaUser, FaGoogle, FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
 import { useAuth } from "../../provider/AuthProvider";
 
 const Register = () => {
-  const { createUser, updateUserProfile } = useAuth();
+  const { createUser, updateUserProfile, googleSignIn } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -72,27 +72,22 @@ const Register = () => {
     }
   };
 
-  const handleSocialLogin = async (provider) => {
+  const handleGoogleSignIn = async () => {
     try {
-      // TODO: Implement social login
-      // console.log("Social login with:", provider);
+      setLoading(true);
+      setError("");
+      await googleSignIn();
+      navigate("/");
     } catch (error) {
-      setError(`Failed to login with ${provider}`);
-      console.error("Social login error:", error);
+      console.error("Google sign in error:", error);
+      setError("Failed to sign in with Google. Please try again.");
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-secondary-50 dark:bg-secondary-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 relative">
-        {/* Back to Home Button */}
-        <button
-          onClick={() => navigate("/")}
-          className="absolute -top-10 left-0 flex items-center text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
-        >
-          <FaArrowLeft className="mr-1" /> Back to Home
-        </button>
-
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-secondary-900 dark:text-white">
             Create your account
@@ -101,7 +96,7 @@ const Register = () => {
             Already have an account?{" "}
             <Link
               to="/auth/login"
-              className="font-medium text-primary-500 hover:text-primary-600"
+              className="font-medium text-teal-600 hover:text-teal-700"
             >
               Sign in
             </Link>
@@ -229,7 +224,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Creating account..." : "Create account"}
             </button>
@@ -248,41 +243,38 @@ const Register = () => {
             </div>
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="mt-6">
             <button
-              onClick={() => handleSocialLogin("google")}
-              className="w-full inline-flex justify-center py-2 px-4 border border-secondary-300 dark:border-secondary-600 rounded-lg shadow-sm bg-white dark:bg-secondary-700 text-sm font-medium text-secondary-700 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-600"
+              onClick={handleGoogleSignIn}
+              disabled={loading}
+              className="w-full inline-flex justify-center items-center py-2 px-4 border border-secondary-300 dark:border-secondary-600 rounded-md shadow-sm bg-white dark:bg-secondary-700 text-sm font-medium text-secondary-700 dark:text-white hover:bg-secondary-50 dark:hover:bg-secondary-600 disabled:opacity-50"
             >
-              <FaGoogle className="w-5 h-5" />
-              <span className="ml-2">Google</span>
-            </button>
-
-            <button
-              onClick={() => handleSocialLogin("github")}
-              className="w-full inline-flex justify-center py-2 px-4 border border-secondary-300 dark:border-secondary-600 rounded-lg shadow-sm bg-white dark:bg-secondary-700 text-sm font-medium text-secondary-700 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-600"
-            >
-              <FaGithub className="w-5 h-5" />
-              <span className="ml-2">GitHub</span>
+              <FaGoogle className="mr-2" />
+              {loading ? 'Signing up...' : 'Continue with Google'}
             </button>
           </div>
         </div>
 
-        <p className="mt-4 text-center text-sm text-secondary-600 dark:text-secondary-400">
-          By creating an account, you agree to our{" "}
-          <Link
-            to="/terms"
-            className="font-medium text-primary-500 hover:text-primary-600"
-          >
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link
-            to="/privacy"
-            className="font-medium text-primary-500 hover:text-primary-600"
-          >
-            Privacy Policy
-          </Link>
-        </p>
+        <div className="mt-6 text-center">
+          <p className="text-sm text-secondary-600 dark:text-secondary-400">
+            Already have an account?{" "}
+            <Link
+              to="/auth/login"
+              className="font-medium text-teal-600 hover:text-teal-700"
+            >
+              Sign in
+            </Link>
+          </p>
+          
+          <div className="mt-6">
+            <button
+              onClick={() => navigate("/")}
+              className="inline-flex items-center text-sm bg-teal-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-teal-700 transition shadow"
+            >
+              <FaArrowLeft className="mr-1" /> Back to Home
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
