@@ -14,15 +14,7 @@ import Profile from "../pages/Profile";
 import Settings from "../pages/Settings";
 import AuthLayout from "../layouts/AuthLayout";
 import MainLayout from "../layouts/MainLayout";
-
-const NotFound = () => (
-  <div className="text-center py-20">
-    <h1 className="text-4xl font-bold mb-4">404 - Not Found</h1>
-    <p className="text-lg text-gray-600 dark:text-gray-300">
-      The page you are looking for does not exist.
-    </p>
-  </div>
-);
+import NotFound from "../pages/NotFound";
 
 const AppRoutes = () => {
   return (
@@ -44,22 +36,6 @@ const AppRoutes = () => {
             element={
               <PrivateRoute>
                 <CreateEvent />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <PrivateRoute>
-                <Profile />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <PrivateRoute>
-                <Settings />
               </PrivateRoute>
             }
           />
@@ -87,14 +63,34 @@ const AppRoutes = () => {
               </PrivateRoute>
             }
           />
-          <Route path="*" element={<NotFound />} />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <PrivateRoute>
+                <Settings />
+              </PrivateRoute>
+            }
+          />
         </Route>
+
+        {/* Auth routes */}
         <Route element={<AuthLayout />}>
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/auth/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Route>
+
+        {/* 404 - Catch all unmatched routes */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
-      <Toaster />
+      <Toaster position="top-right" />
     </>
   );
 };
