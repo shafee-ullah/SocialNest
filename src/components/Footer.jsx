@@ -15,7 +15,7 @@ const Footer = () => {
   return (
     <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
             <Link to="/" className="inline-block">
@@ -57,49 +57,8 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Quick Links
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  to="/events"
-                  className="text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200 text-sm"
-                >
-                  Upcoming Events
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/create-event"
-                  className="text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200 text-sm"
-                >
-                  Create Event
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/joined-events"
-                  className="text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200 text-sm"
-                >
-                  Joined Events
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/manage-events"
-                  className="text-gray-600 dark:text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors duration-200 text-sm"
-                >
-                  Manage Events
-                </Link>
-              </li>
-            </ul>
-          </div>
-
           {/* Support */}
-          <div>
+          <div >
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Support
             </h3>
@@ -171,7 +130,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-600 dark:text-gray-400 text-sm">
-              © {new Date().getFullYear()} SocialNest. All rights reserved.
+              {new Date().getFullYear()} SocialNest. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link

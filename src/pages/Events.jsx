@@ -115,7 +115,7 @@ const Events = () => {
             />
             <FaSearch className="absolute left-3 top-3 text-secondary-400" />
           </div>
-          <select
+          {/* <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="px-4 py-2 rounded-lg border border-secondary-300 dark:border-secondary-600 bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -125,7 +125,7 @@ const Events = () => {
                 {category.name}
               </option>
             ))}
-          </select>
+          </select> */}
         </div>
       </div>
 
