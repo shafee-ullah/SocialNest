@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
           // Fetch user profile
           try {
             const response = await fetch(
-              `https://socialnest-eight.vercel.app/users/${user.email}`,
+              `http://localhost:5000/users/${user.email}`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`,

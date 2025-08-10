@@ -27,16 +27,20 @@ const ManageEvents = () => {
   }, []);
 
   const handleDeleteEvent = async (eventId) => {
-    if (window.confirm("Are you sure you want to delete this event?")) {
-      try {
-        await deleteEvent(eventId);
-        setEvents(events.filter((event) => event._id !== eventId));
-        toast.success("Event deleted successfully");
-      } catch (error) {
-        setError("Failed to delete event");
-        console.error("Delete event error:", error);
-        toast.error("Failed to delete event");
-      }
+    if (!window.confirm("Are you sure you want to delete this event?")) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await deleteEvent(eventId);
+      setEvents(events.filter((event) => event._id !== eventId));
+      toast.success("Event deleted successfully!");
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error(error.message || "Failed to delete event. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 

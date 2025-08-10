@@ -1,6 +1,6 @@
 import { getAuth } from "firebase/auth";
 
-const BASE_URL = "https://socialnest-eight.vercel.app";
+const BASE_URL = "http://localhost:5000";
 
 const getHeaders = async () => {
   const auth = getAuth();
@@ -248,7 +248,11 @@ export const deleteEvent = async (id) => {
       headers: headers,
     });
 
-    await handleResponse(response);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Failed to delete event');
+    }
+
     return true;
   } catch (error) {
     console.error("Error deleting event:", error);
