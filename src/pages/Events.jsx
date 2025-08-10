@@ -16,6 +16,7 @@ const Events = () => {
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("date-asc");
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -37,22 +38,42 @@ const Events = () => {
     fetchEvents();
   }, []);
 
-  const categories = [
-    { id: "all", name: "All Events" },
-    { id: "environment", name: "Environment" },
-    { id: "charity", name: "Charity" },
-    { id: "education", name: "Education" },
-    { id: "health", name: "Health" },
-  ];
+  // const categories = [
+  //   { id: "all", name: "All Events" },
+  //   { id: "environment", name: "Environment" },
+  //   { id: "charity", name: "Charity" },
+  //   { id: "education", name: "Education" },
+  //   { id: "health", name: "Health" },
+  // ];
 
   const filteredEvents = events.filter((event) => {
     const matchesSearch =
       event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory =
-      selectedCategory === "all" || event.category === selectedCategory;
+      selectedCategory === "all" || event.eventType === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const sortedEvents = [...filteredEvents].sort((a, b) => {
+    const dateA = new Date(a.eventDate);
+    const dateB = new Date(b.eventDate);
+    
+    switch (sortBy) {
+      case 'date-asc':
+        return dateA - dateB; // Oldest first
+      case 'date-desc':
+        return dateB - dateA; // Newest first
+      case 'participants-desc':
+        return (b.participantsCount || 0) - (a.participantsCount || 0); // Most participants first
+      default:
+        return 0;
+    }
+  });
+
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value);
+  };
 
   const handleViewEvent = (eventId) => {
     navigate(`/events/${eventId}`);
@@ -115,23 +136,22 @@ const Events = () => {
             />
             <FaSearch className="absolute left-3 top-3 text-secondary-400" />
           </div>
-          {/* <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+          {/* Sort Dropdown */}
+          <select
+            value={sortBy}
+            onChange={handleSortChange}
             className="px-4 py-2 rounded-lg border border-secondary-300 dark:border-secondary-600 bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select> */}
+            <option value="date-asc">Sort by: Date (Oldest First)</option>
+            <option value="date-desc">Sort by: Date (Newest First)</option>
+            <option value="participants-desc">Sort by: Most Popular</option>
+          </select>
         </div>
       </div>
 
       {/* Events Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredEvents.map((event) => (
+        {sortedEvents.map((event) => (
           <div
             key={event._id}
             className="bg-white dark:bg-secondary-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
@@ -143,8 +163,6 @@ const Events = () => {
                 className="w-full h-full object-cover"
               />
               <div className="absolute top-4 right-4 bg-primary-500 text-white px-3 py-1 rounded-full text-sm">
-                {/*{event.category.charAt(0).toUpperCase() +*/}
-                {/*  event.category.slice(1)}*/}
                 {event.eventType}
               </div>
             </div>
@@ -211,7 +229,7 @@ const Events = () => {
         ))}
       </div>
 
-      {filteredEvents.length === 0 && (
+      {sortedEvents.length === 0 && (
         <div className="text-center py-12">
           <p className="text-secondary-600 dark:text-secondary-400 text-lg">
             No events found matching your criteria.
