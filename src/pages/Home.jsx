@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { toast } from "react-hot-toast";
 import {
   FaCalendarPlus,
   FaUsers,
@@ -48,6 +49,28 @@ const galleryTitles = [
 ];
 
 const Home = () => {
+  const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    
+    // Basic validation
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    setIsLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      toast.success('Thank you for subscribing to our newsletter!');
+      setEmail('');
+      setIsLoading(false);
+    }, 1000);
+  };
+
   return (
     <div className="w-full">
       {/* Banner Section */}
@@ -141,19 +164,23 @@ const Home = () => {
             Subscribe to our newsletter for the latest updates on social service
             events and community news.
           </p>
-          <form className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="w-full sm:w-auto px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              disabled
+              required
             />
             <button
-              type="button"
-              className="px-8 py-3 bg-teal-600 text-white font-semibold rounded-lg shadow hover:bg-teal-700 transition"
-              disabled
+              type="submit"
+              disabled={isLoading}
+              className={`px-8 py-3 bg-teal-600 text-white font-semibold rounded-lg shadow hover:bg-teal-700 transition ${
+                isLoading ? 'opacity-70 cursor-not-allowed' : ''
+              }`}
             >
-              Subscribe
+              {isLoading ? 'Subscribing...' : 'Subscribe'}
             </button>
           </form>
         </div>

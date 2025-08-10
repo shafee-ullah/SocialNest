@@ -92,7 +92,7 @@ npm run dev
 npm run dev
 ```
 
-## � Screenshots
+### Screenshots
 
 ### Homepage
 ![SocialNest Homepage](./src/assets/SocialNest.png)
