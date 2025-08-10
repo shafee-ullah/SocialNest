@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaEnvelope, FaLock, FaUser, FaGoogle, FaGithub } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaUser, FaGoogle, FaGithub, FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
 import { useAuth } from "../../provider/AuthProvider";
 
 const Register = () => {
@@ -14,6 +14,8 @@ const Register = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -82,33 +84,17 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-secondary-50 dark:bg-secondary-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+      <div className="max-w-md w-full space-y-8 relative">
         {/* Back to Home Button */}
-        <div className="absolute top-4 left-4">
-          <Link
-            to="/"
-            className="inline-flex items-center text-sm font-medium text-secondary-600 dark:text-secondary-400 hover:text-primary-500 dark:hover:text-primary-400"
-          >
-            <svg
-              className="h-5 w-5 mr-1"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Back to Home
-          </Link>
-        </div>
-        
+        <button
+          onClick={() => navigate("/")}
+          className="absolute -top-10 left-0 flex items-center text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+        >
+          <FaArrowLeft className="mr-1" /> Back to Home
+        </button>
+
         <div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-secondary-900 dark:text-secondary-100">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-secondary-900 dark:text-white">
             Create your account
           </h2>
           <p className="mt-2 text-center text-sm text-secondary-600 dark:text-secondary-400">
@@ -130,12 +116,10 @@ const Register = () => {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
+            {/* Name field */}
             <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-secondary-700 dark:text-secondary-300"
-              >
-                Full name
+              <label htmlFor="name" className="block text-sm font-medium text-secondary-700 dark:text-secondary-300">
+                Full Name
               </label>
               <div className="mt-1 relative">
                 <input
@@ -146,18 +130,16 @@ const Register = () => {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-4 py-2 pl-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="appearance-none block w-full px-4 py-2 pl-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Enter your full name"
                 />
                 <FaUser className="absolute left-3 top-3 text-secondary-400" />
               </div>
             </div>
 
+            {/* Email field */}
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-secondary-700 dark:text-secondary-300"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-secondary-700 dark:text-secondary-300">
                 Email address
               </label>
               <div className="mt-1 relative">
@@ -169,56 +151,76 @@ const Register = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-4 py-2 pl-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="appearance-none block w-full px-4 py-2 pl-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Enter your email"
                 />
                 <FaEnvelope className="absolute left-3 top-3 text-secondary-400" />
               </div>
             </div>
 
+            {/* Password field with show/hide toggle */}
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-secondary-700 dark:text-secondary-300"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-secondary-700 dark:text-secondary-300">
                 Password
               </label>
               <div className="mt-1 relative">
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   autoComplete="new-password"
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-4 py-2 pl-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="appearance-none block w-full px-4 py-2 pl-10 pr-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Create a password"
                 />
                 <FaLock className="absolute left-3 top-3 text-secondary-400" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-secondary-400 hover:text-secondary-500 focus:outline-none"
+                  tabIndex="-1"
+                >
+                  {showPassword ? (
+                    <FaEyeSlash className="h-4 w-4" />
+                  ) : (
+                    <FaEye className="h-4 w-4" />
+                  )}
+                </button>
               </div>
             </div>
 
+            {/* Confirm Password field with show/hide toggle */}
             <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-secondary-700 dark:text-secondary-300"
-              >
-                Confirm password
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-secondary-700 dark:text-secondary-300">
+                Confirm Password
               </label>
               <div className="mt-1 relative">
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   autoComplete="new-password"
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-4 py-2 pl-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="appearance-none block w-full px-4 py-2 pl-10 pr-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Confirm your password"
                 />
                 <FaLock className="absolute left-3 top-3 text-secondary-400" />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-3 text-secondary-400 hover:text-secondary-500 focus:outline-none"
+                  tabIndex="-1"
+                >
+                  {showConfirmPassword ? (
+                    <FaEyeSlash className="h-4 w-4" />
+                  ) : (
+                    <FaEye className="h-4 w-4" />
+                  )}
+                </button>
               </div>
             </div>
           </div>

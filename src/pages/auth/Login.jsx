@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FaEnvelope, FaLock, FaGoogle, FaGithub } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaGoogle, FaGithub, FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
 import { useAuth } from "../../provider/AuthProvider";
 
 const Login = () => {
@@ -13,6 +13,7 @@ const Login = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -78,7 +79,15 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-secondary-50 dark:bg-secondary-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+      <div className="max-w-md w-full space-y-8 relative">
+        {/* Back to Home Button */}
+        <button
+          onClick={() => navigate("/")}
+          className="absolute -top-10 left-0 flex items-center text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+        >
+          <FaArrowLeft className="mr-1" /> Back to Home
+        </button>
+        
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-secondary-900 dark:text-white">
             Sign in to your account
@@ -93,6 +102,7 @@ const Login = () => {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
+            {/* Email field */}
             <div>
               <label
                 htmlFor="email"
@@ -116,6 +126,7 @@ const Login = () => {
               </div>
             </div>
 
+            {/* Password field with show/hide toggle */}
             <div>
               <label
                 htmlFor="password"
@@ -127,15 +138,27 @@ const Login = () => {
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-4 py-2 pl-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="appearance-none block w-full px-4 py-2 pl-10 pr-10 border border-secondary-300 dark:border-secondary-600 rounded-lg bg-white dark:bg-secondary-700 text-secondary-900 dark:text-secondary-100 placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder="Enter your password"
                 />
                 <FaLock className="absolute left-3 top-3 text-secondary-400" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-secondary-400 hover:text-secondary-500 focus:outline-none"
+                  tabIndex="-1"
+                >
+                  {showPassword ? (
+                    <FaEyeSlash className="h-4 w-4" />
+                  ) : (
+                    <FaEye className="h-4 w-4" />
+                  )}
+                </button>
               </div>
             </div>
           </div>
@@ -156,14 +179,7 @@ const Login = () => {
               </label>
             </div>
 
-            <div className="text-sm">
-              <Link
-                to="/auth/forgot-password"
-                className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
-              >
-                Forgot your password?
-              </Link>
-            </div>
+          
           </div>
 
           <div>
