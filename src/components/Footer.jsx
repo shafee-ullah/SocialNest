@@ -9,6 +9,7 @@ import {
   FaPhone,
   FaMapMarkerAlt,
   FaHeart,
+  FaCopyright
 } from "react-icons/fa";
 
 const Footer = () => {
@@ -105,19 +106,19 @@ const Footer = () => {
             </h3>
             <ul className="space-y-4">
               <li className="flex items-start space-x-3">
-                <FaMapMarkerAlt className="text-blue-600 dark:text-blue-400 mt-1" />
+                <FaMapMarkerAlt className="text-teal-600 dark:text-teal-400 mt-1" />
                 <span className="text-gray-600 dark:text-gray-400 text-sm">
                   123 Community Street, City, Country
                 </span>
               </li>
               <li className="flex items-center space-x-3">
-                <FaPhone className="text-blue-600 dark:text-blue-400" />
+                <FaPhone className="text-teal-600 dark:text-teal-400" />
                 <span className="text-gray-600 dark:text-gray-400 text-sm">
                   +1 234 567 890
                 </span>
               </li>
               <li className="flex items-center space-x-3">
-                <FaEnvelope className="text-blue-600 dark:text-blue-400" />
+                <FaEnvelope className="text-teal-600 dark:text-teal-400" />
                 <span className="text-gray-600 dark:text-gray-400 text-sm">
                   support@socialnest.com
                 </span>
@@ -128,31 +129,10 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
-          <div className="text-center">
-            <p className="text-gray-600 dark:text-gray-400 text-sm">
-              {new Date().getFullYear()} SocialNest. All rights reserved.
-            </p>
+          <div className="flex items-center justify-center space-x-1 text-gray-600 dark:text-gray-400 text-sm">
+            <FaCopyright className="h-3.5 w-3.5" />
+            <span>{new Date().getFullYear()} SocialNest. All rights reserved.</span>
           </div>
-          {/* <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link
-                to="/privacy"
-                className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-sm"
-              >
-                Privacy Policy
-              </Link>
-              <Link
-                to="/terms"
-                className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-sm"
-              >
-                Terms of Service
-              </Link>
-              <Link
-                to="/cookies"
-                className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-sm"
-              >
-                Cookie Policy
-              </Link>
-            </div> */}
         </div>
       </div>
     </footer>

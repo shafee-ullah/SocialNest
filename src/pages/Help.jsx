@@ -158,41 +158,41 @@ const Help = () => {
           <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-8">Still need help?</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 mb-4">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-primary-100 dark:bg-primary-900/30 text-teal-600 dark:text-teal-400 mb-4">
                 <FaEnvelope className="h-6 w-6" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Email Us</h3>
               <p className="text-gray-600 dark:text-gray-300 mb-2">We'll respond within 24 hours</p>
-              <a href="mailto:support@socialnest.com" className="text-primary-600 dark:text-primary-400 hover:underline">
+              <a href="mailto:support@socialnest.com" className="text-teal-600 dark:text-teal-400 hover:underline">
                 support@socialnest.com
               </a>
             </div>
             
             <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 mb-4">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-primary-100 dark:bg-primary-900/30 text-teal-600 dark:text-teal-400 mb-4">
                 <FaPhone className="h-6 w-6" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Call Us</h3>
               <p className="text-gray-600 dark:text-gray-300 mb-2">Monday - Friday, 9am - 5pm EST</p>
-              <a href="tel:+11234567890" className="text-primary-600 dark:text-primary-400 hover:underline">
+              <a href="tel:+11234567890" className="text-teal-600 dark:text-teal-400 hover:underline">
                 +1 (123) 456-7890
               </a>
             </div>
             
             <div className="text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 mb-4">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-primary-100 dark:bg-primary-900/30 text-teal-600 dark:text-teal-400 mb-4">
                 <FaCommentDots className="h-6 w-6" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Live Chat</h3>
               <p className="text-gray-600 dark:text-gray-300 mb-2">Chat with our support team</p>
-              <button className="text-primary-600 dark:text-primary-400 hover:underline">
+              <button className="text-teal-600 dark:text-teal-400 hover:underline">
                 Start Chat
               </button>
             </div>
           </div>
         </div>
         
-        <div className="mt-8 text-center">
+        {/* <div className="mt-8 text-center">
           <Link 
             to="/" 
             className="inline-flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300"
@@ -202,7 +202,7 @@ const Help = () => {
             </svg>
             Back to Home
           </Link>
-        </div>
+        </div> */}
       </div>
     </div>
   );
