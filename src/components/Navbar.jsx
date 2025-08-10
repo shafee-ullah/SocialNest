@@ -1,6 +1,6 @@
 // src/components/Navbar.jsx
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router";
 import {
   FaUser,
   FaSignOutAlt,
@@ -22,7 +22,78 @@ const Navbar = () => {
   const { user, logOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setImageError(false);
+  }, [user?.photoURL]);
+
+  const handleImageError = (e) => {
+    console.error('Error loading profile image:', e);
+    console.log('Image source that failed to load:', e.target.src);
+    setImageError(true);
+  };
+
+  const renderProfileImage = () => {
+    // If no user or no photo URL, return default avatar
+    if (!user) {
+      return (
+        <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-800 flex items-center justify-center">
+          <FaUser className="w-5 h-5 text-teal-600 dark:text-teal-300" />
+        </div>
+      );
+    }
+
+    // Process Google profile picture URL
+    const getProcessedPhotoUrl = (url) => {
+      if (!url) return null;
+      
+      // If it's a Google profile picture, modify the URL to get a larger size
+      if (url.includes('googleusercontent.com')) {
+        try {
+          // Remove any existing size parameter
+          const cleanUrl = url.split('=')[0];
+          // Return URL with a larger size (s400-c)
+          return `${cleanUrl}=s400-c`;
+        } catch (error) {
+          console.error('Error processing Google profile URL:', error);
+          return url;
+        }
+      }
+      return url;
+    };
+
+    const photoUrl = getProcessedPhotoUrl(user.photoURL);
+    
+    if (photoUrl && !imageError) {
+      return (
+        <div className="relative">
+          <img
+            src={photoUrl}
+            alt={user.displayName || 'Profile'}
+            className="w-10 h-10 rounded-full border-2 border-teal-500 object-cover"
+            onError={handleImageError}
+            loading="lazy"
+            referrerPolicy="no-referrer"
+          />
+        </div>
+      );
+    }
+
+    // Fallback to default avatar if no photo URL or error loading image
+    return (
+      <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-800 flex items-center justify-center">
+        {user.displayName ? (
+          <span className="font-semibold text-teal-700 dark:text-teal-200">
+            {user.displayName.charAt(0).toUpperCase()}
+          </span>
+        ) : (
+          <FaUser className="w-5 h-5 text-teal-600 dark:text-teal-300" />
+        )}
+      </div>
+    );
+  };
 
   const handleLogout = async () => {
     try {
@@ -42,27 +113,31 @@ const Navbar = () => {
         <FaCalendarAlt className="mr-2" />
         Upcoming Events
       </Link>
-      <Link
-        to="/create-event"
-        className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
-      >
-        <FaPlus className="mr-2" />
-        Create Event
-      </Link>
-      <Link
-        to="/joined-events"
-        className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
-      >
-        <FaCheckCircle className="mr-2" />
-        Joined Events
-      </Link>
-      <Link
-        to="/manage-events"
-        className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
-      >
-        <FaList className="mr-2" />
-        Manage Events
-      </Link>
+      {user && (
+        <>
+          <Link
+            to="/create-event"
+            className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
+          >
+            <FaPlus className="mr-2" />
+            Create Event
+          </Link>
+          <Link
+            to="/joined-events"
+            className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
+          >
+            <FaCheckCircle className="mr-2" />
+            Joined Events
+          </Link>
+          <Link
+            to="/manage-events"
+            className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
+          >
+            <FaList className="mr-2" />
+            Manage Events
+          </Link>
+        </>
+      )}
       <div className="px-3 py-2">
         <ThemeToggle />
       </div>
@@ -110,17 +185,7 @@ const Navbar = () => {
                   onBlur={() => setTimeout(() => setIsDropdownOpen(false), 150)}
                   className="flex items-center focus:outline-none"
                 >
-                  {user.photoURL ? (
-                    <img
-                      src={user.photoURL}
-                      alt={user.displayName}
-                      className="w-10 h-10 rounded-full border-2 border-teal-500 object-cover"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-800 flex items-center justify-center">
-                      <FaUser className="w-5 h-5 text-teal-600 dark:text-teal-300" />
-                    </div>
-                  )}
+                  {renderProfileImage()}
                 </button>
                 {/* Dropdown */}
                 <div
@@ -132,23 +197,8 @@ const Navbar = () => {
                   onMouseEnter={() => setIsDropdownOpen(true)}
                   onMouseLeave={() => setIsDropdownOpen(false)}
                 >
-                  <div className="px-4 py-2 border-b border-gray-100 dark:border-teal-800 text-gray-900 dark:text-white font-semibold flex items-center space-x-2">
-                    {user.displayName ? (
-                      <>
-                        {user.photoURL ? (
-                          <img
-                            src={user.photoURL}
-                            alt={user.displayName}
-                            className="w-7 h-7 rounded-full border border-teal-400"
-                          />
-                        ) : (
-                          <FaUser className="w-5 h-5 text-teal-600 dark:text-teal-300" />
-                        )}
-                        <span>{user.displayName}</span>
-                      </>
-                    ) : (
-                      <span>User</span>
-                    )}
+                  <div className="px-4 py-2 border-b border-gray-100 dark:border-teal-800 text-gray-900 dark:text-white font-semibold">
+                    {user.displayName || 'User'}
                   </div>
                   <button
                     onClick={handleLogout}
