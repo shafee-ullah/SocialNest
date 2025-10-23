@@ -20,6 +20,7 @@ import Faq from "../pages/Faq";
 import Privacy from "../pages/Privacy";
 import Terms from "../pages/Terms";
 import Help from "../pages/Help";
+import Community from "../pages/Community";
 
 const AppRoutes = () => {
   return (
@@ -29,6 +30,7 @@ const AppRoutes = () => {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/community" element={<Community />} />
           <Route path="/faq" element={<Faq />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />

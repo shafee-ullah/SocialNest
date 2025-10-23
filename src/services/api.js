@@ -310,3 +310,110 @@ export const getEventById = async (id) => {
     throw error;
   }
 };
+
+// ========== POSTS/SOCIAL FEED API ==========
+
+// Get all posts with optional filters
+export const getPosts = async (params = {}) => {
+  try {
+    const queryParams = new URLSearchParams(params).toString();
+    const url = `${BASE_URL}/posts${queryParams ? `?${queryParams}` : ""}`;
+
+    const headers = await getHeaders();
+    const response = await fetch(url, {
+      method: "GET",
+      headers: headers,
+    });
+
+    return handleResponse(response);
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    throw error;
+  }
+};
+
+// Get single post by ID
+export const getPost = async (id) => {
+  if (!id) {
+    throw new Error("Post ID is required");
+  }
+
+  try {
+    const headers = await getHeaders();
+    const response = await fetch(`${BASE_URL}/posts/${id}`, {
+      method: "GET",
+      headers: headers,
+    });
+
+    return handleResponse(response);
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    throw error;
+  }
+};
+
+// Create new post
+export const createPost = async (postData) => {
+  try {
+    const headers = await getHeaders();
+    const response = await fetch(`${BASE_URL}/posts`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(postData),
+    });
+
+    return handleResponse(response);
+  } catch (error) {
+    console.error("Error creating post:", error);
+    throw error;
+  }
+};
+
+// Toggle like on a post
+export const toggleLikePost = async (postId) => {
+  try {
+    const headers = await getHeaders();
+    const response = await fetch(`${BASE_URL}/posts/${postId}/like`, {
+      method: "PATCH",
+      headers: headers,
+    });
+
+    return handleResponse(response);
+  } catch (error) {
+    console.error("Error toggling like:", error);
+    throw error;
+  }
+};
+
+// Add comment to a post
+export const addComment = async (postId, commentText) => {
+  try {
+    const headers = await getHeaders();
+    const response = await fetch(`${BASE_URL}/posts/${postId}/comment`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({ text: commentText }),
+    });
+
+    return handleResponse(response);
+  } catch (error) {
+    console.error("Error adding comment:", error);
+    throw error;
+  }
+};
+
+// Delete social feed post
+export const deleteFeedPost = async (postId) => {
+  try {
+    const headers = await getHeaders();
+    const response = await fetch(`${BASE_URL}/posts/${postId}`, {
+      method: "DELETE",
+      headers: headers,
+    });
+
+    return handleResponse(response);
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    throw error;
+  }
+};

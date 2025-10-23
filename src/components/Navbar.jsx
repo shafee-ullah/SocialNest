@@ -15,6 +15,7 @@ import {
   FaBars,
   FaTimes,
   FaQuestionCircle,
+  FaUsers,
 } from "react-icons/fa";
 import { useAuth } from "../provider/AuthProvider";
 import ThemeToggle from "./ThemeToggle";
@@ -111,16 +112,17 @@ const Navbar = () => {
         to="/"
         className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
       >
-        <FaHome className="mr-2" />
+        {/* <FaHome className="mr-2" /> */}
         Home
       </Link>
       <Link
         to="/events"
         className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
       >
-        <FaCalendarAlt className="mr-2" />
+        {/* <FaCalendarAlt className="mr-2" /> */}
         Upcoming Events
       </Link>
+
 
       {user && (
         <>
@@ -128,39 +130,49 @@ const Navbar = () => {
             to="/create-event"
             className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
           >
-            <FaPlus className="mr-2" />
+            {/* <FaPlus className="mr-2" /> */}
             Create Event
           </Link>
           <Link
             to="/joined-events"
             className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
           >
-            <FaCheckCircle className="mr-2" />
+            {/* <FaCheckCircle className="mr-2" /> */}
             Joined Events
           </Link>
           <Link
             to="/manage-events"
             className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
           >
-            <FaList className="mr-2" />
+            {/* <FaList className="mr-2" /> */}
             Manage Events
           </Link>
         </>
       )}
 
-      <Link
-        to="/about"
+            <Link
+        to="/community"
         className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
       >
-        <FaBuilding className="mr-2" />
-        About Us
+        {/* <FaUsers className="mr-2" /> */}
+        SocialNest Feed
       </Link>
+
+      {!user && (
+        <Link
+          to="/about"
+          className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
+        >
+          {/* <FaBuilding className="mr-2" /> */}
+          About Us
+        </Link>
+      )}
       {!user && (
         <Link
           to="/help"
           className="flex items-center px-3 py-2 rounded hover:bg-teal-50 dark:hover:bg-teal-800 transition-colors"
         >
-          <FaQuestionCircle className="mr-2" />
+          {/* <FaQuestionCircle className="mr-2" /> */}
           Help Center
         </Link>
       )}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
+import { Link } from "react-router-dom";
 import CountUp from "react-countup";
 import { useInView } from "react-intersection-observer";
 import uniceflogo from "../assets/unicef.png";
@@ -24,8 +25,12 @@ import {
   FaGraduationCap,
   FaRobot,
   FaPaperPlane,
+  FaComment,
+  FaRegHeart,
+  FaUser,
 } from "react-icons/fa";
 import SocialNestChatbot from "../components/chatbot/SocialNestChatbot";
+import { getPosts } from "../services/api";
 
 const features = [
   {
@@ -143,7 +148,7 @@ const upcomingEvents = [
 const partners = [
   {
     name: "Save The Children",
-    logo: savethechildren
+    logo: savethechildren,
   },
   {
     name: "UNICEF",
@@ -259,11 +264,70 @@ const successStories = [
   },
 ];
 
+// Sample feed data for preview
+const feedPreviewData = [
+  {
+    id: 1,
+    username: "Sarah Johnson",
+    userAvatar:
+      "https://images.unsplash.com/photo-1546961329-78bef0414d7c?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687",
+    content:
+      "Just completed our beach cleanup event! 🏖️ So proud of our 45 volunteers who collected over 200kg of trash. Every small effort counts!",
+    category: "Community Cleanup",
+    likes: 23,
+    comments: 8,
+    timeAgo: "2h ago",
+    image:
+      "https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=300&q=80",
+  },
+  {
+    id: 2,
+    username: "Green Earth NGO",
+    userAvatar:
+      "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&fit=crop&w=100&q=80",
+    content:
+      "Our tree plantation drive was a huge success! 🌳 500+ saplings planted with the help of local community. Special thanks to all volunteers!",
+    category: "Tree Plantation",
+    likes: 45,
+    comments: 12,
+    timeAgo: "5h ago",
+    image:
+      "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=300&q=80",
+  },
+  {
+    id: 3,
+    username: "Michael Chen",
+    userAvatar:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=100&q=80",
+    content:
+      "Teaching basic literacy skills at the community center today. The smiles on these children's faces make every moment worthwhile! 📚✨",
+    category: "Education",
+    likes: 34,
+    comments: 6,
+    timeAgo: "1d ago",
+  },
+  {
+    id: 4,
+    username: "Community Kitchen",
+    userAvatar:
+      "https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=100&q=80",
+    content:
+      "Distributed 250+ meals to families in need today. Grateful for our volunteers who cooked and served with so much love! 🍲❤️",
+    category: "Food Distribution",
+    likes: 67,
+    comments: 15,
+    timeAgo: "1d ago",
+  },
+];
+
 const Home = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
+  const [recentPosts, setRecentPosts] = useState([]);
+  const [loadingPosts, setLoadingPosts] = useState(true);
   const chatbotRef = useRef(null);
+  const [feedPosts, setFeedPosts] = useState([]);
 
   const handleOpenChatbot = () => {
     if (chatbotRef.current) {
@@ -310,13 +374,13 @@ const Home = () => {
   };
 
   // NEW: Auto-scroll to bottom of chat
-  const scrollToBottom = () => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  // const scrollToBottom = () => {
+  //   chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [chatMessages]);
+  // useEffect(() => {
+  //   scrollToBottom();
+  // }, [chatMessages]);
 
   // NEW: Handle question click
   const handleQuestionClick = (question) => {
@@ -390,6 +454,36 @@ const Home = () => {
     const timer = setInterval(nextEvent, 5000);
     return () => clearInterval(timer);
   }, []);
+
+  // Fetch recent posts for social feed preview
+  useEffect(() => {
+    const fetchRecentPosts = async () => {
+      try {
+        const posts = await getPosts({ limit: 3, sortBy: "recent" });
+        setRecentPosts(posts);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setLoadingPosts(false);
+      }
+    };
+    fetchRecentPosts();
+  }, []);
+
+  // socail feed
+  useEffect(() => {
+    setFeedPosts(feedPreviewData);
+  }, []);
+
+  const handleLike = (postId) => {
+    setFeedPosts((posts) =>
+      posts.map((post) =>
+        post.id === postId
+          ? { ...post, likes: post.likes + 1, liked: true }
+          : post
+      )
+    );
+  };
 
   return (
     <div className="w-full">
@@ -490,116 +584,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Upcoming Events Section - UPDATED with better alignment */}
-      <section className="py-16 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className=" mb-10">
-            <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white">
-              Upcoming Events
-            </h2>
-            {/* <a
-              href="/events"
-              className="flex items-center text-teal-600 hover:text-teal-700 font-semibold"
-            >
-              View All Events
-              <FaArrowRight className="ml-2" />
-            </a> */}
-          </div>
-
-          <div className="relative">
-            {/* Event Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
-              {upcomingEvents.map((event, index) => (
-                <div
-                  key={event.id}
-                  className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700"
-                >
-                  <div className="relative">
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="absolute top-4 right-4 bg-teal-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                      {new Date(event.date).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </div>
-                  </div>
-
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 leading-tight">
-                      {event.title}
-                    </h3>
-
-                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 leading-relaxed">
-                      {event.description}
-                    </p>
-
-                    {/* Event Details - Properly Aligned */}
-                    <div className="space-y-3 mb-4">
-                      <div className="flex items-center text-gray-600 dark:text-gray-400">
-                        <FaCalendar className="w-4 h-4 mr-3 text-teal-600 flex-shrink-0" />
-                        <span className="text-sm">
-                          {new Date(event.date).toLocaleDateString("en-US", {
-                            weekday: "long",
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center text-gray-600 dark:text-gray-400">
-                        <FaMapMarker className="w-4 h-4 mr-3 text-teal-600 flex-shrink-0" />
-                        <span className="text-sm">{event.location}</span>
-                      </div>
-
-                      <div className="flex items-center text-gray-600 dark:text-gray-400">
-                        <FaUserFriends className="w-4 h-4 mr-3 text-teal-600 flex-shrink-0" />
-                        <span className="text-sm">
-                          {event.volunteers} volunteers registered
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Join Button */}
-                    {/* <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                        <FaUsers className="mr-1" />
-                        {event.volunteers} spots left
-                      </div>
-                      <a
-                        href="/events"
-                        className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors duration-200 shadow hover:shadow-md"
-                      >
-                        Join Now
-                      </a>
-                    </div> */}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Slider Controls */}
-            {/* <div className="flex justify-center mt-8 space-x-4">
-              <button
-                onClick={prevEvent}
-                className="p-3 rounded-full bg-teal-600 text-white hover:bg-teal-700 transition shadow-md"
-              >
-                <FaArrowLeft />
-              </button>
-              <button
-                onClick={nextEvent}
-                className="p-3 rounded-full bg-teal-600 text-white hover:bg-teal-700 transition shadow-md"
-              >
-                <FaArrowRight />
-              </button>
-            </div> */}
-          </div>
-        </div>
-      </section>
+ 
 
       {/* NEW: AI Chatbot Preview Section */}
       <section className="py-16 ">
@@ -805,7 +790,7 @@ const Home = () => {
       </section>
 
       {/* Impact Statistics Section */}
-      <section ref={counterRef} className="py-16 bg-white dark:bg-gray-900">
+      <section ref={counterRef} className="py-16 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
             Our Community Impact
@@ -902,7 +887,7 @@ const Home = () => {
       </section>
 
       {/* Partner Organizations Section - UPDATED with relevant images */}
-      <section className="py-16 bg-white dark:bg-gray-900">
+      <section className="py-16 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
             Our Trusted Partners
@@ -999,8 +984,207 @@ const Home = () => {
         </div>
       </section>
 
+      {/* SocialNest Feed */}
+      <section className="py-16 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-4">
+          {/* Section Header */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-teal-100 dark:bg-teal-900 rounded-full mb-4">
+              <FaComment className="w-7 h-7 text-teal-600 dark:text-teal-400" />
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              Community Updates
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-6">
+              Get inspired by recent activities and stories from our community
+              of changemakers
+            </p>
+            <a
+              href="/community"
+              className="inline-flex items-center text-teal-600 hover:text-teal-700 font-semibold"
+            >
+              View SocialNest Feed
+              <FaArrowRight className="ml-2" />
+            </a>
+          </div>
+
+          {/* Feed Preview Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
+            {feedPosts.slice(0, 4).map((post) => (
+              <div
+                key={post.id}
+                className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 hover:shadow-md transition-all duration-300 border border-gray-200 dark:border-gray-700 group cursor-pointer"
+                onClick={() => (window.location.href = "/community")}
+              >
+                {/* Post Header - Compact */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-3">
+                    {post.userAvatar ? (
+                      <img
+                        src={post.userAvatar}
+                        alt={post.username}
+                        className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-gray-700"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900 flex items-center justify-center">
+                        <FaUser className="text-teal-600 dark:text-teal-400 w-5 h-5" />
+                      </div>
+                    )}
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
+                        {post.username}
+                      </h4>
+                      <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
+                        <span>{post.timeAgo}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span className="px-2 py-1 bg-teal-100 dark:bg-teal-900 text-teal-700 dark:text-teal-300 rounded-full text-xs font-medium">
+                    {post.category}
+                  </span>
+                </div>
+
+                {/* Content Preview */}
+                <div className="mb-4">
+                  <p className="text-gray-700 dark:text-gray-300 text-sm line-clamp-2 leading-relaxed">
+                    {post.content}
+                  </p>
+                </div>
+
+                {/* Image Thumbnail */}
+                {post.image && (
+                  <div className="mb-4 rounded-lg overflow-hidden">
+                    <img
+                      src={post.image}
+                      alt="Post content"
+                      className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+
+                {/* Engagement Stats - Compact */}
+                {/* <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center space-x-4">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleLike(post.id);
+                      }}
+                      className={`flex items-center space-x-1 transition ${
+                        post.liked ? "text-red-500" : "hover:text-red-500"
+                      }`}
+                    >
+                      {post.liked ? (
+                        <FaHeart className="w-3 h-3" />
+                      ) : (
+                        <FaRegHeart className="w-3 h-3" />
+                      )}
+                      <span>{post.likes}</span>
+                    </button>
+                    <div className="flex items-center space-x-1">
+                      <FaComment className="w-3 h-3" />
+                      <span>{post.comments}</span>
+                    </div>
+                  </div>
+                  <span className="text-teal-600 dark:text-teal-400 font-medium group-hover:underline">
+                    Read more
+                  </span>
+                </div> */}
+              </div>
+            ))}
+          </div>
+
+          {/* Stats and CTA */}
+          {/* <div className="bg-gradient-to-r from-teal-600 to-green-500 rounded-2xl p-8 text-center text-white">
+            <div className="max-w-2xl mx-auto">
+              <h3 className="text-2xl font-bold mb-4">
+                Join Our Growing Community
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div>
+                  <div className="text-3xl font-bold mb-1">2,000+</div>
+                  <div className="text-teal-100 text-sm">Active Members</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold mb-1">500+</div>
+                  <div className="text-teal-100 text-sm">Daily Posts</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold mb-1">120+</div>
+                  <div className="text-teal-100 text-sm">Events Shared</div>
+                </div>
+              </div>
+              <p className="text-teal-100 mb-6 max-w-md mx-auto">
+                Share your stories, get inspired, and connect with like-minded
+                changemakers
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href="/auth/register"
+                  className="bg-white text-teal-600 hover:bg-teal-50 font-semibold px-6 py-3 rounded-lg transition-colors shadow-lg hover:shadow-xl"
+                >
+                  Join Community
+                </a>
+                <a
+                  href="/feed"
+                  className="border-2 border-white text-white hover:bg-white hover:text-teal-600 font-semibold px-6 py-3 rounded-lg transition-colors"
+                >
+                  Browse Feed
+                </a>
+              </div>
+            </div>
+          </div> */}
+
+          {/* Quick Preview Cards for Mobile */}
+          <div className="mt-8 md:hidden">
+            <div className="flex space-x-4 overflow-x-auto pb-4 -mx-4 px-4">
+              {feedPosts.slice(0, 3).map((post) => (
+                <div
+                  key={post.id}
+                  className="flex-shrink-0 w-64 bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700"
+                >
+                  <div className="flex items-center space-x-3 mb-3">
+                    {post.userAvatar ? (
+                      <img
+                        src={post.userAvatar}
+                        alt={post.username}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900 flex items-center justify-center">
+                        <FaUser className="text-teal-600 dark:text-teal-400 w-4 h-4" />
+                      </div>
+                    )}
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
+                        {post.username}
+                      </h4>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {post.timeAgo}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-gray-700 dark:text-gray-300 text-xs line-clamp-2 mb-3">
+                    {post.content}
+                  </p>
+                  <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                    <span className="bg-teal-100 dark:bg-teal-900 text-teal-700 dark:text-teal-300 px-2 py-1 rounded-full">
+                      {post.category}
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      <span>{post.likes} likes</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Gallery Section */}
-      <section className="py-16 bg-white dark:bg-gray-900">
+      <section className="py-16 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-10">
             Community Gallery
