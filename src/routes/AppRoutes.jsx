@@ -21,6 +21,7 @@ import Privacy from "../pages/Privacy";
 import Terms from "../pages/Terms";
 import Help from "../pages/Help";
 import Community from "../pages/Community";
+import Dashboard from "../pages/Dashboard";
 
 const AppRoutes = () => {
   return (
@@ -35,6 +36,14 @@ const AppRoutes = () => {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/help" element={<Help />} />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
           <Route
             path="/events/:id"
             element={
