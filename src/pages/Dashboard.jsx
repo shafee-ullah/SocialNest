@@ -174,7 +174,7 @@ const Dashboard = () => {
     if (totalImpact >= 20) return { level: "Community Hero", icon: "🏆", color: "text-yellow-500" };
     if (totalImpact >= 10) return { level: "Active Volunteer", icon: "⭐", color: "text-purple-500" };
     if (totalImpact >= 5) return { level: "Emerging Leader", icon: "🌱", color: "text-green-500" };
-    return { level: "New Volunteer", icon: "👋", color: "text-blue-500" };
+    return { level: "New Volunteer", icon: "👋", color: "text-white" };
   };
 
   const impactLevel = getImpactLevel();
